@@ -26,21 +26,21 @@ const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
 
 const normalIcons = [
-  { id: "water", name: "水ボトル", shortName: "水", emoji: "💧", radius: 22, color: "#79d9ff", outline: "#257aa8", score: 10 },
-  { id: "towel", name: "タオル", shortName: "タオル", emoji: "🧻", radius: 26, color: "#ffffff", outline: "#ff8fa8", score: 24 },
-  { id: "shaker", name: "プロテインシェイカー", shortName: "シェイカー", emoji: "🥤", radius: 30, color: "#ffd166", outline: "#d98600", score: 52 },
-  { id: "dumbbell", name: "ダンベル", shortName: "DB", emoji: "🏋️", radius: 35, color: "#a7e8bd", outline: "#2f8f60", score: 110 },
-  { id: "kettlebell", name: "ケトルベル", shortName: "KB", emoji: "🔔", radius: 40, color: "#c8b6ff", outline: "#6847b8", score: 230 },
-  { id: "plate", name: "プレート", shortName: "皿", emoji: "⚙️", radius: 46, color: "#d7dce5", outline: "#5f6876", score: 480 },
-  { id: "barbell", name: "バーベル", shortName: "バー", emoji: "🏋️‍♂️", radius: 52, color: "#ffb36c", outline: "#b14e1e", score: 990 },
-  { id: "rack", name: "パワーラック", shortName: "ラック", emoji: "▣", radius: 60, color: "#f15d5d", outline: "#263154", score: 2100 },
+  { id: "water", name: "水ボトル", shortName: "水", imageKey: "icon-water", assetPath: null, emoji: "💧", radius: 22, color: "#79d9ff", outline: "#257aa8", score: 10 },
+  { id: "towel", name: "タオル", shortName: "タオル", imageKey: "icon-towel", assetPath: null, emoji: "🧻", radius: 26, color: "#ffffff", outline: "#ff8fa8", score: 24 },
+  { id: "shaker", name: "プロテインシェイカー", shortName: "シェイカー", imageKey: "icon-shaker", assetPath: null, emoji: "🥤", radius: 30, color: "#ffd166", outline: "#d98600", score: 52 },
+  { id: "dumbbell", name: "ダンベル", shortName: "DB", imageKey: "icon-dumbbell", assetPath: null, emoji: "🏋️", radius: 35, color: "#a7e8bd", outline: "#2f8f60", score: 110 },
+  { id: "kettlebell", name: "ケトルベル", shortName: "KB", imageKey: "icon-kettlebell", assetPath: null, emoji: "🔔", radius: 40, color: "#c8b6ff", outline: "#6847b8", score: 230 },
+  { id: "plate", name: "プレート", shortName: "皿", imageKey: "icon-plate", assetPath: null, emoji: "⚙️", radius: 46, color: "#d7dce5", outline: "#5f6876", score: 480 },
+  { id: "barbell", name: "バーベル", shortName: "バー", imageKey: "icon-barbell", assetPath: null, emoji: "🏋️‍♂️", radius: 52, color: "#ffb36c", outline: "#b14e1e", score: 990 },
+  { id: "rack", name: "パワーラック", shortName: "ラック", imageKey: "icon-rack", assetPath: null, emoji: "▣", radius: 60, color: "#f15d5d", outline: "#263154", score: 2100 },
 ];
 
 const specialIcons = [
-  { id: "shiba", name: "柴犬アイコン", shortName: "おにく", emoji: "🐕", radius: 30, color: "#f7943d", outline: "#b84e22", score: 120, kind: "special", effect: "upgradeNearby" },
-  { id: "macho", name: "マッチョマンアイコン", shortName: "マッチョ", emoji: "💪", radius: 34, color: "#d9a1ff", outline: "#9a3fc7", score: 150, kind: "special", effect: "bumpNearby" },
-  { id: "lifter", name: "パワーリフターアイコン", shortName: "リフター", emoji: "🏆", radius: 34, color: "#2d2f38", outline: "#e94d46", score: 180, kind: "special", effect: "pressDown" },
-  { id: "coach", name: "ごすじんアイコン", shortName: "ごすじん", emoji: "🏃‍♀️", radius: 30, color: "#ffb6d0", outline: "#263154", score: 130, kind: "special", effect: "rerollOrTidy" },
+  { id: "shiba", name: "柴犬アイコン", shortName: "おにく", imageKey: "icon-shiba", assetPath: null, emoji: "🐕", radius: 30, color: "#f7943d", outline: "#b84e22", score: 120, kind: "special", effect: "upgradeNearby" },
+  { id: "macho", name: "マッチョマンアイコン", shortName: "マッチョ", imageKey: "icon-macho", assetPath: null, emoji: "💪", radius: 34, color: "#d9a1ff", outline: "#9a3fc7", score: 150, kind: "special", effect: "bumpNearby" },
+  { id: "lifter", name: "パワーリフターアイコン", shortName: "リフター", imageKey: "icon-lifter", assetPath: null, emoji: "🏆", radius: 34, color: "#2d2f38", outline: "#e94d46", score: 180, kind: "special", effect: "pressDown" },
+  { id: "coach", name: "ごすじんアイコン", shortName: "ごすじん", imageKey: "icon-coach", assetPath: null, emoji: "🏃‍♀️", radius: 30, color: "#ffb6d0", outline: "#263154", score: 130, kind: "special", effect: "rerollOrTidy" },
 ];
 
 const onikuStages = [
@@ -138,7 +138,7 @@ function updateOnikuStage() {
   if (newIndex !== currentStageIndex) {
     currentStageIndex = newIndex;
     setCoachComment("evolve");
-    showEvolutionEffect();
+    showEvolutionEffect(onikuStages[currentStageIndex].name);
     onikuNameEl.classList.remove("stage-pop");
     void onikuNameEl.offsetWidth;
     onikuNameEl.classList.add("stage-pop");
@@ -388,8 +388,8 @@ function showCombo(text) {
   comboText.classList.add("is-active");
 }
 
-function showEvolutionEffect() {
-  showCombo("進化！");
+function showEvolutionEffect(stageName) {
+  showCombo(`進化！\n${stageName}へ！`);
   boardWrapEl.classList.remove("is-evolving");
   void boardWrapEl.offsetWidth;
   boardWrapEl.classList.add("is-evolving");

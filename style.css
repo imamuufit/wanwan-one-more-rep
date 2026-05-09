@@ -973,6 +973,18 @@ canvas {
     grid-template-columns: 1fr;
   }
 
+  .board-wrap {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  canvas {
+    width: auto;
+    height: min(510px, 58svh);
+    max-width: 100%;
+  }
+
   .coach-card {
     padding: 10px;
   }
