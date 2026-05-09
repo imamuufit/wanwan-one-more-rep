@@ -686,7 +686,7 @@ button {
 }
 
 .board-wrap::after {
-  content: "✦ ✦ ✦";
+  content: "EVOLVE!";
   position: absolute;
   z-index: 4;
   inset: 20% 0 auto;
@@ -1103,5 +1103,220 @@ canvas {
   .oniku-status strong,
   .next-card strong {
     font-size: 19px;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-shell {
+    padding: 8px;
+  }
+
+  .title-screen {
+    min-height: calc(100svh - 16px);
+    align-content: center;
+    gap: 10px;
+  }
+
+  .title-copy {
+    display: grid;
+    gap: 8px;
+  }
+
+  .logo-wan {
+    font-size: clamp(25px, 8vw, 34px);
+  }
+
+  .logo-rep {
+    font-size: clamp(31px, 10vw, 42px);
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: clamp(19px, 5.8vw, 26px);
+  }
+
+  .story {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .primary-button {
+    min-height: 50px;
+  }
+
+  .title-hero {
+    min-height: 138px;
+  }
+
+  .mystery-gym {
+    top: 0;
+    height: 132px;
+  }
+
+  .onik-badge {
+    bottom: 0;
+    width: 76px;
+    height: 76px;
+    font-size: 42px;
+  }
+
+  .title-screen .story-panels,
+  .title-screen .intro-strip,
+  .title-screen .title-evolution {
+    display: none;
+  }
+
+  body.is-playing {
+    overflow: hidden;
+  }
+
+  body.is-playing .app-shell {
+    height: 100svh;
+    overflow: hidden;
+    padding: 6px;
+  }
+
+  body.is-playing .game-screen {
+    width: 100%;
+    height: calc(100svh - 12px);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  body.is-playing .game-header {
+    grid-template-columns: 76px minmax(0, 1fr) 68px;
+    gap: 6px;
+  }
+
+  body.is-playing .stat-card,
+  body.is-playing .oniku-status {
+    min-height: 42px;
+    padding: 6px 7px;
+  }
+
+  body.is-playing .stat-label {
+    font-size: 9px;
+  }
+
+  body.is-playing .stat-card strong {
+    font-size: 18px;
+  }
+
+  body.is-playing .oniku-status {
+    grid-column: auto;
+    order: initial;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  body.is-playing .oniku-icon {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+    font-size: 19px;
+    border-width: 2px;
+  }
+
+  body.is-playing .oniku-status strong {
+    font-size: 13px;
+    line-height: 1.15;
+  }
+
+  body.is-playing .ghost-button {
+    min-height: 42px;
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  body.is-playing .play-layout {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  body.is-playing .board-wrap {
+    align-self: center;
+    border-width: 6px;
+    border-radius: 8px;
+  }
+
+  body.is-playing .board-topline {
+    top: 44px;
+    font-size: 9px;
+  }
+
+  body.is-playing .drop-label {
+    top: 12px;
+    font-size: 10px;
+  }
+
+  body.is-playing canvas {
+    width: auto;
+    height: clamp(330px, 46svh, 390px);
+    max-width: calc(100vw - 24px);
+  }
+
+  body.is-playing .side-panel {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  body.is-playing .next-card {
+    order: 1;
+    padding: 6px;
+  }
+
+  body.is-playing .coach-card {
+    order: 2;
+    grid-column: auto;
+    padding: 6px;
+    gap: 6px;
+  }
+
+  body.is-playing .next-icon {
+    width: 58px;
+    height: 58px;
+    margin: 3px auto;
+    font-size: 18px;
+  }
+
+  body.is-playing .next-short {
+    font-size: 16px;
+  }
+
+  body.is-playing .next-card strong {
+    font-size: 11px;
+    line-height: 1.15;
+  }
+
+  body.is-playing .coach-face {
+    width: 42px;
+    height: 42px;
+    font-size: 24px;
+    border-width: 2px;
+  }
+
+  body.is-playing .speech-bubble {
+    padding: 7px 8px;
+  }
+
+  body.is-playing .speech-bubble p {
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  body.is-playing .speaker {
+    font-size: 10px;
+  }
+
+  body.is-playing .stage-track-card,
+  body.is-playing .help-card {
+    display: none;
   }
 }

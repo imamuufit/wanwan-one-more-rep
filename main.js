@@ -20,14 +20,16 @@ const gameLogoEl = document.querySelector(".game-logo");
 const titleLogoImageEl = document.getElementById("titleLogoImage");
 
 const BASE_WIDTH = 420;
-const BASE_HEIGHT = 620;
+const DESKTOP_BASE_HEIGHT = 620;
+const MOBILE_BASE_HEIGHT = 520;
 const DROP_Y = 42;
-const GAME_OVER_LINE = 88;
+const DESKTOP_GAME_OVER_LINE = 88;
+const MOBILE_GAME_OVER_LINE = 118;
 const GRAVITY = 0.22;
 const FRICTION = 0.992;
 const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
-const ASSET_VERSION = "20260509-08";
+const ASSET_VERSION = "20260509-09";
 const imageCache = new Map();
 const failedAssets = new Set();
 let loadedAssetCount = 0;
@@ -116,12 +118,26 @@ let pieceId = 0;
 let animationId = null;
 let normalCommentTimer = null;
 let lastTime = 0;
+let baseHeight = getBaseHeight();
+
+function isMobileViewport() {
+  return window.matchMedia("(max-width: 520px)").matches;
+}
+
+function getBaseHeight() {
+  return isMobileViewport() ? MOBILE_BASE_HEIGHT : DESKTOP_BASE_HEIGHT;
+}
+
+function getGameOverLine() {
+  return isMobileViewport() ? MOBILE_GAME_OVER_LINE : DESKTOP_GAME_OVER_LINE;
+}
 
 function setupCanvasDpr() {
   const dpr = Math.max(1, window.devicePixelRatio || 1);
+  baseHeight = getBaseHeight();
   canvas.width = BASE_WIDTH * dpr;
-  canvas.height = BASE_HEIGHT * dpr;
-  canvas.style.aspectRatio = `${BASE_WIDTH} / ${BASE_HEIGHT}`;
+  canvas.height = baseHeight * dpr;
+  canvas.style.aspectRatio = `${BASE_WIDTH} / ${baseHeight}`;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
@@ -418,8 +434,8 @@ function resolveWalls(piece) {
     piece.x = BASE_WIDTH - r;
     piece.vx = -Math.abs(piece.vx) * BOUNCE;
   }
-  if (piece.y + r > BASE_HEIGHT) {
-    piece.y = BASE_HEIGHT - r;
+  if (piece.y + r > baseHeight) {
+    piece.y = baseHeight - r;
     piece.vy = -Math.abs(piece.vy) * BOUNCE;
     piece.vx *= 0.94;
     piece.spin *= 0.86;
@@ -593,7 +609,9 @@ function checkGameOver() {
   const now = performance.now();
   const danger = pieces.some((piece) => {
     if (piece.held || piece.merging) return false;
-    return now - piece.bornAt > 2400 && piece.y - piece.icon.radius < GAME_OVER_LINE && Math.abs(piece.vy) < 0.45;
+    const settleTime = isMobileViewport() ? 1700 : 2400;
+    const velocityLimit = isMobileViewport() ? 0.62 : 0.45;
+    return now - piece.bornAt > settleTime && piece.y - piece.icon.radius < getGameOverLine() && Math.abs(piece.vy) < velocityLimit;
   });
   if (danger) {
     setCoachComment("pinch");
@@ -609,7 +627,7 @@ function endGame() {
 }
 
 function draw() {
-  ctx.clearRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
+  ctx.clearRect(0, 0, BASE_WIDTH, baseHeight);
   drawDropGuide();
   for (const piece of pieces) drawIcon(piece);
 }
@@ -620,7 +638,7 @@ function drawDropGuide() {
   ctx.beginPath();
   ctx.setLineDash([6, 8]);
   ctx.moveTo(currentDrop.x, DROP_Y + 28);
-  ctx.lineTo(currentDrop.x, BASE_HEIGHT - 10);
+  ctx.lineTo(currentDrop.x, baseHeight - 10);
   ctx.lineWidth = 2;
   ctx.strokeStyle = "rgba(38, 49, 84, 0.22)";
   ctx.stroke();
@@ -690,7 +708,8 @@ function drawIconImage(ctx, icon, r) {
   ctx.beginPath();
   ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2);
   ctx.clip();
-  const size = r * 1.5;
+  const imageScale = icon.kind === "special" ? 1.66 : 1.72;
+  const size = r * imageScale;
   ctx.drawImage(image, -size / 2, -size / 2, size, size);
   ctx.restore();
   return true;
@@ -1071,8 +1090,10 @@ function resetGame() {
 }
 
 function startGame() {
+  document.body.classList.add("is-playing");
   titleScreen.classList.add("is-hidden");
   gameScreen.classList.remove("is-hidden");
+  setupCanvasDpr();
   resetGame();
   clearInterval(normalCommentTimer);
   normalCommentTimer = setInterval(() => {
