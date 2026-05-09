@@ -13,6 +13,7 @@ const nextIconEl = document.getElementById("nextIcon");
 const nextNameEl = document.getElementById("nextName");
 const gameOverPanel = document.getElementById("gameOverPanel");
 const comboText = document.getElementById("comboText");
+const stageTrackEl = document.getElementById("stageTrack");
 
 const BASE_WIDTH = 420;
 const BASE_HEIGHT = 620;
@@ -143,6 +144,29 @@ function updateOnikuStage() {
 
   onikuNameEl.textContent = onikuStages[currentStageIndex].name;
   onikuIconEl.textContent = onikuStages[currentStageIndex].icon;
+  updateStageTrack();
+}
+
+function initializeStageTrack() {
+  stageTrackEl.innerHTML = onikuStages
+    .map(
+      (stage, index) => `
+        <div class="stage-node" data-stage="${index}">
+          <b>${stage.icon}</b>
+          <small>${stage.name.replace("おにく君", "")}</small>
+        </div>
+      `,
+    )
+    .join("");
+  updateStageTrack();
+}
+
+function updateStageTrack() {
+  if (!stageTrackEl) return;
+  stageTrackEl.querySelectorAll(".stage-node").forEach((node, index) => {
+    node.classList.toggle("is-current", index === currentStageIndex);
+    node.classList.toggle("is-cleared", index < currentStageIndex);
+  });
 }
 
 function prepareDrop() {
@@ -398,6 +422,14 @@ function drawIcon(piece) {
   ctx.translate(piece.x, piece.y);
   ctx.rotate(piece.angle);
 
+  ctx.save();
+  ctx.translate(4, 8);
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.96, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(32, 34, 56, 0.18)";
+  ctx.fill();
+  ctx.restore();
+
   ctx.beginPath();
   ctx.arc(0, 0, r, 0, Math.PI * 2);
   ctx.fillStyle = icon.color;
@@ -407,15 +439,31 @@ function drawIcon(piece) {
   ctx.stroke();
 
   ctx.beginPath();
+  ctx.arc(0, 0, r - 7, 0, Math.PI * 2);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.54)";
+  ctx.stroke();
+
+  ctx.beginPath();
   ctx.arc(-r * 0.25, -r * 0.3, r * 0.22, 0, Math.PI * 2);
   ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
   ctx.fill();
 
-  ctx.font = `${Math.floor(r * 0.95)}px "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+  ctx.font = `${Math.floor(r * 0.86)}px "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "#202238";
+  ctx.shadowColor = "rgba(255, 255, 255, 0.85)";
+  ctx.shadowBlur = 3;
   ctx.fillText(icon.emoji, 0, 2);
+  ctx.shadowBlur = 0;
+
+  if (r >= 38) {
+    ctx.rotate(-piece.angle);
+    ctx.font = "700 9px Hiragino Sans, Yu Gothic, Meiryo, sans-serif";
+    ctx.fillStyle = "rgba(32, 34, 56, 0.82)";
+    ctx.fillText(icon.name.replace("プロテイン", "").replace("アイコン", ""), 0, r * 0.55);
+  }
   ctx.restore();
 }
 
@@ -491,4 +539,5 @@ window.addEventListener("keydown", (event) => {
 nextIcon = pickNextIcon();
 updateNextUI();
 updateOnikuStage();
+initializeStageTrack();
 setCoachComment("normal");

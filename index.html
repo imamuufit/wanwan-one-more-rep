@@ -10,8 +10,11 @@
     <main class="app-shell">
       <section id="titleScreen" class="title-screen" aria-label="タイトル画面">
         <div class="title-copy">
-          <p class="kicker">24時間ジム風の謎の建物へ、しばダッシュ。</p>
-          <h1>わんわん！<br />ワンモアレップ！</h1>
+          <p class="kicker">架空の24時間ジム風ミステリー空間へ、しばダッシュ。</p>
+          <h1 class="game-logo" aria-label="わんわん！ワンモアレップ！">
+            <span class="logo-wan">🐾 わんわん！ 🐾</span>
+            <span class="logo-rep"><span class="bar bar-left"></span>ワンモアレップ！<span class="bar bar-right"></span></span>
+          </h1>
           <p class="subtitle">ぼくだって、運動したいワン！</p>
           <button id="startButton" class="primary-button" type="button">スタート</button>
           <p class="story">
@@ -21,10 +24,20 @@
           <div class="story-panels" aria-label="ストーリー">
             <article>
               <span>1</span>
-              <p>24時間ジム風の建物の前で、今日もお留守番。</p>
+              <div class="comic-scene gym-outside">
+                <i class="mini-building">OPEN 24h</i>
+                <b class="mini-dog">🐕</b>
+                <em>ぼくも運動したいワン…</em>
+              </div>
+              <p>24時間ジム風の謎の建物の前で、今日もお留守番。</p>
             </article>
             <article>
               <span>2</span>
+              <div class="comic-scene power-space">
+                <b class="mini-dog">🐕</b>
+                <i class="spark">✦ ✦ ✦</i>
+                <em>ごすじん！ぼくだって運動するワン！</em>
+              </div>
               <p>不思議な筋肉空間へ潜入。合体するほど、おにく君が変身！</p>
             </article>
           </div>
@@ -39,12 +52,12 @@
           <div class="onik-badge">🐕</div>
         </div>
         <div class="intro-strip" aria-label="キャラクター紹介">
-          <article><span>🏃‍♀️</span><strong>ごすじん</strong></article>
-          <article><span>🐕</span><strong>おにく</strong></article>
-          <article><span>💪</span><strong>マッチョマン</strong></article>
-          <article><span>🏆</span><strong>リフター</strong></article>
+          <article><span>🏃‍♀️</span><strong>ごすじん</strong><small>明るく応援する女の子</small></article>
+          <article><span>🐕</span><strong>おにく</strong><small>運動したい柴犬</small></article>
+          <article><span>💪</span><strong>マッチョマン</strong><small>陽気な特殊アイコン</small></article>
+          <article><span>🏆</span><strong>リフター</strong><small>黒赤系の力の求道者</small></article>
         </div>
-        <div class="evolution-strip" aria-label="おにくの進化図">
+        <div class="evolution-strip title-evolution" aria-label="おにくの進化図">
           <span>🐕<small>ふつう</small></span>
           <span>🐕‍🦺<small>やる気</small></span>
           <span>🎽<small>フィットネス</small></span>
@@ -75,6 +88,7 @@
         <div class="play-layout">
           <section class="board-wrap" aria-label="プレイエリア">
             <div class="board-topline">ここを超えたらおしまいだワン</div>
+            <div class="drop-label">DROP!</div>
             <canvas id="gameCanvas" width="420" height="620"></canvas>
             <div id="comboText" class="combo-text" aria-live="polite"></div>
             <div id="gameOverPanel" class="game-over is-hidden" role="dialog" aria-modal="true">
@@ -85,6 +99,11 @@
           </section>
 
           <aside class="side-panel">
+            <div class="stage-track-card">
+              <span class="stat-label">ONIKU EVOLUTION</span>
+              <div id="stageTrack" class="stage-track" aria-label="おにく君の進化段階"></div>
+            </div>
+
             <div class="coach-card">
               <div class="coach-face">🏃‍♀️</div>
               <div class="speech-bubble">
