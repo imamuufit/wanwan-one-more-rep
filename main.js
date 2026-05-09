@@ -22,9 +22,10 @@ const onikuLiveArtEl = document.getElementById("onikuLiveArt");
 const onikuLiveNameEl = document.getElementById("onikuLiveName");
 const miniStageTrackEl = document.getElementById("miniStageTrack");
 
-const BASE_WIDTH = 420;
+const DESKTOP_BASE_WIDTH = 420;
+const MOBILE_BASE_WIDTH = 360;
 const DESKTOP_BASE_HEIGHT = 620;
-const MOBILE_BASE_HEIGHT = 520;
+const MOBILE_BASE_HEIGHT = 500;
 const DROP_Y = 42;
 const DESKTOP_GAME_OVER_LINE = 88;
 const MOBILE_GAME_OVER_LINE = 118;
@@ -32,7 +33,7 @@ const GRAVITY = 0.22;
 const FRICTION = 0.992;
 const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
-const ASSET_VERSION = "20260509-11";
+const ASSET_VERSION = "20260509-12";
 const USE_TITLE_IMAGE_LOGO = false;
 const imageCache = new Map();
 const failedAssets = new Set();
@@ -112,7 +113,7 @@ const audioHooks = {
 let pieces = [];
 let currentDrop = null;
 let nextIcon = null;
-let dropX = BASE_WIDTH / 2;
+let dropX = DESKTOP_BASE_WIDTH / 2;
 let canDrop = true;
 let isGameOver = false;
 let score = 0;
@@ -123,11 +124,16 @@ let pieceId = 0;
 let animationId = null;
 let normalCommentTimer = null;
 let lastTime = 0;
+let baseWidth = getBaseWidth();
 let baseHeight = getBaseHeight();
 let titleLogoNoticeShown = false;
 
 function isMobileViewport() {
   return window.matchMedia("(max-width: 520px)").matches;
+}
+
+function getBaseWidth() {
+  return isMobileViewport() ? MOBILE_BASE_WIDTH : DESKTOP_BASE_WIDTH;
 }
 
 function getBaseHeight() {
@@ -140,10 +146,11 @@ function getGameOverLine() {
 
 function setupCanvasDpr() {
   const dpr = Math.max(1, window.devicePixelRatio || 1);
+  baseWidth = getBaseWidth();
   baseHeight = getBaseHeight();
-  canvas.width = BASE_WIDTH * dpr;
+  canvas.width = baseWidth * dpr;
   canvas.height = baseHeight * dpr;
-  canvas.style.aspectRatio = `${BASE_WIDTH} / ${baseHeight}`;
+  canvas.style.aspectRatio = `${baseWidth} / ${baseHeight}`;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
@@ -452,8 +459,8 @@ function dropCurrentIcon() {
 function moveDrop(clientX) {
   if (!currentDrop || isGameOver) return;
   const rect = canvas.getBoundingClientRect();
-  const x = ((clientX - rect.left) / rect.width) * BASE_WIDTH;
-  dropX = Math.max(30, Math.min(BASE_WIDTH - 30, x));
+  const x = ((clientX - rect.left) / rect.width) * baseWidth;
+  dropX = Math.max(30, Math.min(baseWidth - 30, x));
   currentDrop.x = dropX;
 }
 
@@ -484,8 +491,8 @@ function resolveWalls(piece) {
     piece.x = r;
     piece.vx = Math.abs(piece.vx) * BOUNCE;
   }
-  if (piece.x + r > BASE_WIDTH) {
-    piece.x = BASE_WIDTH - r;
+  if (piece.x + r > baseWidth) {
+    piece.x = baseWidth - r;
     piece.vx = -Math.abs(piece.vx) * BOUNCE;
   }
   if (piece.y + r > baseHeight) {
@@ -681,7 +688,7 @@ function endGame() {
 }
 
 function draw() {
-  ctx.clearRect(0, 0, BASE_WIDTH, baseHeight);
+  ctx.clearRect(0, 0, baseWidth, baseHeight);
   drawDropGuide();
   for (const piece of pieces) drawIcon(piece);
 }
@@ -762,7 +769,7 @@ function drawIconImage(ctx, icon, r) {
   ctx.beginPath();
   ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2);
   ctx.clip();
-  const imageScale = icon.kind === "special" ? 1.66 : 1.72;
+  const imageScale = (icon.kind === "special" ? 1.66 : 1.72) + (isMobileViewport() ? 0.08 : 0);
   const size = r * imageScale;
   ctx.drawImage(image, -size / 2, -size / 2, size, size);
   ctx.restore();
@@ -1126,7 +1133,9 @@ function resetGame() {
   if (animationId) cancelAnimationFrame(animationId);
   pieces = [];
   currentDrop = null;
-  dropX = BASE_WIDTH / 2;
+  baseWidth = getBaseWidth();
+  baseHeight = getBaseHeight();
+  dropX = baseWidth / 2;
   canDrop = true;
   isGameOver = false;
   score = 0;
@@ -1173,7 +1182,7 @@ window.addEventListener("keydown", (event) => {
     if (currentDrop) currentDrop.x = dropX;
   }
   if (event.key === "ArrowRight") {
-    dropX = Math.min(BASE_WIDTH - 30, dropX + 22);
+    dropX = Math.min(baseWidth - 30, dropX + 22);
     if (currentDrop) currentDrop.x = dropX;
   }
   if (event.key === " " || event.key === "Enter" || event.key === "ArrowDown") {

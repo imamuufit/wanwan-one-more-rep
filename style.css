@@ -656,13 +656,18 @@ button {
 
 .play-layout {
   display: grid;
+  grid-template-areas:
+    "oniku board side"
+    "evo evo evo";
   grid-template-columns: minmax(150px, 0.42fr) minmax(320px, 500px) minmax(190px, 0.5fr);
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: stretch;
   justify-content: center;
 }
 
 .oniku-live-card {
+  grid-area: oniku;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 8px;
@@ -673,6 +678,13 @@ button {
   background:
     radial-gradient(circle at 50% 22%, rgba(255, 209, 102, 0.42), transparent 34%),
     linear-gradient(180deg, rgba(255, 250, 245, 0.96), rgba(255, 236, 218, 0.94));
+}
+
+.oniku-live-card small {
+  color: rgba(38, 49, 84, 0.68);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.3;
 }
 
 .oniku-live-art {
@@ -726,6 +738,7 @@ button {
 }
 
 .board-wrap {
+  grid-area: board;
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -872,9 +885,14 @@ canvas {
 }
 
 .side-panel {
+  grid-area: side;
   display: grid;
   align-content: start;
   gap: 8px;
+}
+
+.stage-track-card {
+  grid-area: evo;
 }
 
 .coach-card {
@@ -1087,9 +1105,16 @@ canvas {
     font-size: 58px;
   }
 
-  .game-header,
-  .play-layout {
+  .game-header {
     grid-template-columns: 1fr;
+  }
+
+  .play-layout {
+    grid-template-areas:
+      "board side"
+      "oniku side"
+      "evo evo";
+    grid-template-columns: minmax(300px, 1fr) minmax(190px, 0.62fr);
   }
 
   .game-header {
@@ -1309,7 +1334,12 @@ canvas {
   body.is-playing .play-layout {
     min-height: 0;
     display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "board"
+      "side"
+      "evo";
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto auto;
     gap: 6px;
   }
 
@@ -1335,13 +1365,13 @@ canvas {
 
   body.is-playing canvas {
     width: auto;
-    height: clamp(330px, 46svh, 390px);
-    max-width: calc(100vw - 24px);
+    height: clamp(350px, 50svh, 430px);
+    max-width: min(90vw, 360px);
   }
 
   body.is-playing .side-panel {
     display: grid;
-    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-columns: 100px minmax(0, 1fr);
     gap: 6px;
     align-items: stretch;
   }
@@ -1398,6 +1428,36 @@ canvas {
 
   body.is-playing .stage-track-card,
   body.is-playing .help-card {
+    display: none;
+  }
+
+  body.is-playing .stage-track-card {
+    display: block;
+    padding: 4px 6px;
+  }
+
+  body.is-playing .stage-track-card .stat-label {
+    display: none;
+  }
+
+  body.is-playing .stage-track {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 3px;
+    margin-top: 0;
+  }
+
+  body.is-playing .stage-node {
+    min-height: 24px;
+    padding: 2px;
+    border-radius: 999px;
+  }
+
+  body.is-playing .stage-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  body.is-playing .stage-node::after {
     display: none;
   }
 }
