@@ -29,7 +29,7 @@ const GRAVITY = 0.22;
 const FRICTION = 0.992;
 const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
-const ASSET_VERSION = "20260509-09";
+const ASSET_VERSION = "20260509-10";
 const imageCache = new Map();
 const failedAssets = new Set();
 let loadedAssetCount = 0;
@@ -54,13 +54,13 @@ const specialIcons = [
 
 const onikuStages = [
   { name: "\u{3075}\u{3064}\u{3046}\u{306e}\u{304a}\u{306b}\u{304f}\u{541b}", shortName: "\u{3075}\u{3064}\u{3046}", imageKey: "oniku-stage-01", assetPath: "assets/characters/oniku/oniku_stage_01_normal.png", icon: "\u{1f415}", score: 0 },
-  { name: "\u{3084}\u{308b}\u{6c17}\u{304a}\u{306b}\u{304f}\u{541b}", shortName: "\u{3084}\u{308b}\u{6c17}", imageKey: "oniku-stage-02", assetPath: "assets/characters/oniku/oniku_stage_02_motivated.png", icon: "\u{1f415}\u{200d}\u{1f9ba}", score: 180 },
-  { name: "\u{30d5}\u{30a3}\u{30c3}\u{30c8}\u{30cd}\u{30b9}\u{304a}\u{306b}\u{304f}\u{541b}", shortName: "\u{30d5}\u{30a3}\u{30c3}\u{30c8}\u{30cd}\u{30b9}", imageKey: "oniku-stage-03", assetPath: "assets/characters/oniku/oniku_stage_03_fitness.png", icon: "\u{1f3bd}", score: 480 },
-  { name: "\u{30de}\u{30c3}\u{30b9}\u{30eb}\u{304a}\u{306b}\u{304f}\u{541b}", shortName: "\u{30de}\u{30c3}\u{30b9}\u{30eb}", imageKey: "oniku-stage-04", assetPath: "assets/characters/oniku/oniku_stage_04_muscle.png", icon: "\u{1f4aa}", score: 980 },
-  { name: "\u{30d1}\u{30ef}\u{30fc}\u{3057}\u{3070}", shortName: "\u{30d1}\u{30ef}\u{30fc}", imageKey: "oniku-stage-05", assetPath: "assets/characters/oniku/oniku_stage_05_power_shiba.png", icon: "\u{1f525}", score: 1700 },
-  { name: "\u{30de}\u{30c3}\u{30c1}\u{30e7}\u{3057}\u{3070}", shortName: "\u{30de}\u{30c3}\u{30c1}\u{30e7}", imageKey: "oniku-stage-06", assetPath: "assets/characters/oniku/oniku_stage_06_macho_shiba.png", icon: "\u{1f3cb}\u{fe0f}", score: 2800 },
-  { name: "\u{30ea}\u{30d5}\u{30bf}\u{30fc}\u{3057}\u{3070}", shortName: "\u{30ea}\u{30d5}\u{30bf}\u{30fc}", imageKey: "oniku-stage-07", assetPath: "assets/characters/oniku/oniku_stage_07_lifter_shiba.png", icon: "\u{1f3c6}", score: 4300 },
-  { name: "\u{308f}\u{3093}\u{30e2}\u{30a2}\u{30fb}\u{30d3}\u{30fc}\u{30b9}\u{30c8}", shortName: "\u{30d3}\u{30fc}\u{30b9}\u{30c8}", imageKey: "oniku-stage-08", assetPath: "assets/characters/oniku/oniku_stage_08_one_more_beast.png", icon: "\u{26a1}", score: 6200 },
+  { name: "\u{3084}\u{308b}\u{6c17}\u{304a}\u{306b}\u{304f}\u{541b}", shortName: "\u{3084}\u{308b}\u{6c17}", imageKey: "oniku-stage-02", assetPath: "assets/characters/oniku/oniku_stage_02_motivated.png", icon: "\u{1f415}\u{200d}\u{1f9ba}", score: 600 },
+  { name: "\u{30d5}\u{30a3}\u{30c3}\u{30c8}\u{30cd}\u{30b9}\u{304a}\u{306b}\u{304f}\u{541b}", shortName: "\u{30d5}\u{30a3}\u{30c3}\u{30c8}\u{30cd}\u{30b9}", imageKey: "oniku-stage-03", assetPath: "assets/characters/oniku/oniku_stage_03_fitness.png", icon: "\u{1f3bd}", score: 1400 },
+  { name: "\u{30de}\u{30c3}\u{30b9}\u{30eb}\u{304a}\u{306b}\u{304f}\u{541b}", shortName: "\u{30de}\u{30c3}\u{30b9}\u{30eb}", imageKey: "oniku-stage-04", assetPath: "assets/characters/oniku/oniku_stage_04_muscle.png", icon: "\u{1f4aa}", score: 2600 },
+  { name: "\u{30d1}\u{30ef}\u{30fc}\u{3057}\u{3070}", shortName: "\u{30d1}\u{30ef}\u{30fc}", imageKey: "oniku-stage-05", assetPath: "assets/characters/oniku/oniku_stage_05_power_shiba.png", icon: "\u{1f525}", score: 4200 },
+  { name: "\u{30de}\u{30c3}\u{30c1}\u{30e7}\u{3057}\u{3070}", shortName: "\u{30de}\u{30c3}\u{30c1}\u{30e7}", imageKey: "oniku-stage-06", assetPath: "assets/characters/oniku/oniku_stage_06_macho_shiba.png", icon: "\u{1f3cb}\u{fe0f}", score: 6500 },
+  { name: "\u{30ea}\u{30d5}\u{30bf}\u{30fc}\u{3057}\u{3070}", shortName: "\u{30ea}\u{30d5}\u{30bf}\u{30fc}", imageKey: "oniku-stage-07", assetPath: "assets/characters/oniku/oniku_stage_07_lifter_shiba.png", icon: "\u{1f3c6}", score: 9500 },
+  { name: "\u{308f}\u{3093}\u{30e2}\u{30a2}\u{30fb}\u{30d3}\u{30fc}\u{30b9}\u{30c8}", shortName: "\u{30d3}\u{30fc}\u{30b9}\u{30c8}", imageKey: "oniku-stage-08", assetPath: "assets/characters/oniku/oniku_stage_08_one_more_beast.png", icon: "\u{26a1}", score: 13500 },
 ];
 
 const CHARACTER_ASSETS = {
@@ -112,6 +112,7 @@ let dropX = BASE_WIDTH / 2;
 let canDrop = true;
 let isGameOver = false;
 let score = 0;
+let evolutionPoints = 0;
 let currentStageIndex = 0;
 let comboCount = 0;
 let pieceId = 0;
@@ -166,7 +167,7 @@ function preloadImage(key, src, fallbackSources = []) {
     image.onload = () => {
       imageCache.set(key, image);
       loadedAssetCount += 1;
-      console.info("Asset loaded:", currentSrc);
+      console.info("Loaded asset:", key, currentSrc);
       updateAssetDrivenUI();
     };
     image.onerror = () => {
@@ -300,17 +301,21 @@ function setCoachComment(type) {
 function updateNextUI() {
   if (!nextIcon) return;
   const image = getCachedImage(nextIcon.imageKey);
+  const assetTitle = `${nextIcon.imageKey} / ${nextIcon.name}`;
+  nextIconEl.dataset.key = nextIcon.imageKey;
+  nextIconEl.title = assetTitle;
   nextIconEl.classList.toggle("has-image", Boolean(image));
   nextIconEl.innerHTML = image
-    ? `<img class="next-art" src="${image.src}" alt=""><span class="next-short">${nextIcon.shortName}</span>`
+    ? `<img class="next-art" src="${image.src}" alt="" data-key="${nextIcon.imageKey}" title="${assetTitle}"><span class="next-short">${nextIcon.shortName}</span>`
     : `<span class="next-short">${nextIcon.shortName}</span>`;
   nextIconEl.style.borderColor = nextIcon.outline;
   nextIconEl.style.background = nextIcon.color;
   nextNameEl.textContent = nextIcon.name;
 }
 
-function updateScore(points) {
+function updateScore(points, evolutionGain = Math.floor(points * 0.35)) {
   score += points;
+  evolutionPoints += evolutionGain;
   scoreEl.textContent = score.toLocaleString("ja-JP");
   updateOnikuStage();
 }
@@ -318,7 +323,7 @@ function updateScore(points) {
 function updateOnikuStage() {
   let newIndex = currentStageIndex;
   for (let i = onikuStages.length - 1; i >= 0; i -= 1) {
-    if (score >= onikuStages[i].score) {
+    if (evolutionPoints >= onikuStages[i].score) {
       newIndex = i;
       break;
     }
@@ -342,15 +347,17 @@ function updateOnikuStageVisual() {
   const stage = onikuStages[currentStageIndex];
   if (!stage) return;
   const image = getCachedImage(stage.imageKey);
-  onikuIconEl.innerHTML = image ? `<img src="${image.src}" alt="">` : stage.icon;
+  onikuIconEl.dataset.key = stage.imageKey;
+  onikuIconEl.title = `${stage.imageKey} / ${stage.name}`;
+  onikuIconEl.innerHTML = image ? `<img src="${image.src}" alt="" data-key="${stage.imageKey}" title="${stage.imageKey} / ${stage.name}">` : stage.icon;
 }
 
 function initializeStageTrack() {
   stageTrackEl.innerHTML = onikuStages
     .map(
       (stage, index) => `
-        <div class="stage-node" data-stage="${index}">
-          <img class="stage-thumb" alt="">
+        <div class="stage-node" data-stage="${index}" data-key="${stage.imageKey}" title="${stage.imageKey} / ${stage.name}">
+          <img class="stage-thumb" alt="" data-key="${stage.imageKey}" title="${stage.imageKey} / ${stage.name}">
           <b>${stage.icon}</b>
           <small>${stage.shortName}</small>
         </div>
@@ -366,7 +373,13 @@ function updateStageTrack() {
     const stage = onikuStages[index];
     const image = getCachedImage(stage.imageKey);
     const thumb = node.querySelector(".stage-thumb");
-    if (image && thumb) thumb.src = image.src;
+    node.dataset.key = stage.imageKey;
+    node.title = `${stage.imageKey} / ${stage.name}`;
+    if (thumb) {
+      thumb.dataset.key = stage.imageKey;
+      thumb.title = `${stage.imageKey} / ${stage.name}`;
+      if (image) thumb.src = image.src;
+    }
     node.classList.toggle("has-image", Boolean(image));
     node.classList.toggle("is-current", index === currentStageIndex);
     node.classList.toggle("is-cleared", index < currentStageIndex);
@@ -511,7 +524,7 @@ function mergePieces(a, b) {
 function triggerSpecial(piece) {
   if (piece.usedSpecial) return;
   piece.usedSpecial = true;
-  updateScore(piece.icon.score);
+  updateScore(piece.icon.score, 0);
   showCombo(getSpecialMessage(piece.icon));
   setCoachComment("merge");
   audioHooks.special();
@@ -579,7 +592,7 @@ function upgradeNearby(source) {
     if (level < 0 || level >= normalIcons.length - 1) continue;
     target.icon = normalIcons[level + 1];
     target.vy = -2;
-    updateScore(Math.floor(target.icon.score * 0.5));
+    updateScore(Math.floor(target.icon.score * 0.5), Math.floor(target.icon.score * 0.12));
   }
 }
 
@@ -1076,6 +1089,7 @@ function resetGame() {
   canDrop = true;
   isGameOver = false;
   score = 0;
+  evolutionPoints = 0;
   comboCount = 0;
   currentStageIndex = 0;
   pieceId = 0;
