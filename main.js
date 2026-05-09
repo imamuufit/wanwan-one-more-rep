@@ -33,8 +33,9 @@ const GRAVITY = 0.22;
 const FRICTION = 0.992;
 const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
-const ASSET_VERSION = "20260509-12";
+const ASSET_VERSION = "20260509-13";
 const USE_TITLE_IMAGE_LOGO = false;
+const USE_IMAGE_ICONS_ON_BOARD = true;
 const imageCache = new Map();
 const failedAssets = new Set();
 let loadedAssetCount = 0;
@@ -762,6 +763,7 @@ function drawIconBase(ctx, icon, r) {
 }
 
 function drawIconImage(ctx, icon, r) {
+  if (!USE_IMAGE_ICONS_ON_BOARD) return false;
   const image = getCachedImage(icon.imageKey);
   if (!image) return false;
 
