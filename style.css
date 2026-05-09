@@ -625,6 +625,29 @@ button {
   pointer-events: none;
 }
 
+.board-wrap::after {
+  content: "✦ ✦ ✦";
+  position: absolute;
+  z-index: 4;
+  inset: 20% 0 auto;
+  color: #fff4a3;
+  font-size: clamp(26px, 7vw, 48px);
+  font-weight: 1000;
+  text-align: center;
+  text-shadow: 0 0 14px #ffffff, 0 0 24px var(--yellow);
+  opacity: 0;
+  transform: translateY(16px) scale(0.8);
+  pointer-events: none;
+}
+
+.board-wrap.is-evolving {
+  animation: boardShake 0.45s ease both;
+}
+
+.board-wrap.is-evolving::after {
+  animation: evolveSpark 0.85s ease both;
+}
+
 canvas {
   position: relative;
   z-index: 2;
@@ -670,9 +693,12 @@ canvas {
   z-index: 4;
   top: 42%;
   left: 50%;
+  width: min(88%, 440px);
   color: var(--red);
-  font-size: clamp(30px, 7vw, 56px);
+  font-size: clamp(24px, 6vw, 52px);
   font-weight: 1000;
+  line-height: 1.12;
+  text-align: center;
   text-shadow: 3px 3px 0 #ffffff;
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.85);
@@ -780,7 +806,10 @@ canvas {
   height: 86px;
   margin: 10px auto 8px;
   color: var(--ink);
-  font-size: 42px;
+  font-size: 18px;
+  font-weight: 1000;
+  line-height: 1.05;
+  text-align: center;
   background: #ffffff;
   border: 5px solid var(--mint);
   border-radius: 50%;
@@ -817,6 +846,40 @@ canvas {
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes boardShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes evolveSpark {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.8);
+  }
+  35% {
+    opacity: 1;
+    transform: translateY(0) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-38px) scale(1);
   }
 }
 

@@ -14,6 +14,7 @@ const nextNameEl = document.getElementById("nextName");
 const gameOverPanel = document.getElementById("gameOverPanel");
 const comboText = document.getElementById("comboText");
 const stageTrackEl = document.getElementById("stageTrack");
+const boardWrapEl = document.querySelector(".board-wrap");
 
 const BASE_WIDTH = 420;
 const BASE_HEIGHT = 620;
@@ -25,21 +26,21 @@ const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
 
 const normalIcons = [
-  { id: "water", name: "水ボトル", emoji: "💧", radius: 22, color: "#79d9ff", outline: "#257aa8", score: 10 },
-  { id: "towel", name: "タオル", emoji: "🧻", radius: 26, color: "#ffffff", outline: "#ff8fa8", score: 24 },
-  { id: "shaker", name: "プロテインシェイカー", emoji: "🥤", radius: 30, color: "#ffd166", outline: "#d98600", score: 52 },
-  { id: "dumbbell", name: "ダンベル", emoji: "🏋️", radius: 35, color: "#a7e8bd", outline: "#2f8f60", score: 110 },
-  { id: "kettlebell", name: "ケトルベル", emoji: "🔔", radius: 40, color: "#c8b6ff", outline: "#6847b8", score: 230 },
-  { id: "plate", name: "プレート", emoji: "⚙️", radius: 46, color: "#d7dce5", outline: "#5f6876", score: 480 },
-  { id: "barbell", name: "バーベル", emoji: "🏋️‍♂️", radius: 52, color: "#ffb36c", outline: "#b14e1e", score: 990 },
-  { id: "rack", name: "パワーラック", emoji: "▣", radius: 60, color: "#f15d5d", outline: "#263154", score: 2100 },
+  { id: "water", name: "水ボトル", shortName: "水", emoji: "💧", radius: 22, color: "#79d9ff", outline: "#257aa8", score: 10 },
+  { id: "towel", name: "タオル", shortName: "タオル", emoji: "🧻", radius: 26, color: "#ffffff", outline: "#ff8fa8", score: 24 },
+  { id: "shaker", name: "プロテインシェイカー", shortName: "シェイカー", emoji: "🥤", radius: 30, color: "#ffd166", outline: "#d98600", score: 52 },
+  { id: "dumbbell", name: "ダンベル", shortName: "DB", emoji: "🏋️", radius: 35, color: "#a7e8bd", outline: "#2f8f60", score: 110 },
+  { id: "kettlebell", name: "ケトルベル", shortName: "KB", emoji: "🔔", radius: 40, color: "#c8b6ff", outline: "#6847b8", score: 230 },
+  { id: "plate", name: "プレート", shortName: "皿", emoji: "⚙️", radius: 46, color: "#d7dce5", outline: "#5f6876", score: 480 },
+  { id: "barbell", name: "バーベル", shortName: "バー", emoji: "🏋️‍♂️", radius: 52, color: "#ffb36c", outline: "#b14e1e", score: 990 },
+  { id: "rack", name: "パワーラック", shortName: "ラック", emoji: "▣", radius: 60, color: "#f15d5d", outline: "#263154", score: 2100 },
 ];
 
 const specialIcons = [
-  { id: "shiba", name: "柴犬アイコン", emoji: "🐕", radius: 30, color: "#f7943d", outline: "#b84e22", score: 120, kind: "special", effect: "upgradeNearby" },
-  { id: "macho", name: "マッチョマンアイコン", emoji: "💪", radius: 34, color: "#d9a1ff", outline: "#9a3fc7", score: 150, kind: "special", effect: "bumpNearby" },
-  { id: "lifter", name: "パワーリフターアイコン", emoji: "🏆", radius: 34, color: "#2d2f38", outline: "#e94d46", score: 180, kind: "special", effect: "pressDown" },
-  { id: "coach", name: "ごすじんアイコン", emoji: "🏃‍♀️", radius: 30, color: "#ffb6d0", outline: "#263154", score: 130, kind: "special", effect: "rerollOrTidy" },
+  { id: "shiba", name: "柴犬アイコン", shortName: "おにく", emoji: "🐕", radius: 30, color: "#f7943d", outline: "#b84e22", score: 120, kind: "special", effect: "upgradeNearby" },
+  { id: "macho", name: "マッチョマンアイコン", shortName: "マッチョ", emoji: "💪", radius: 34, color: "#d9a1ff", outline: "#9a3fc7", score: 150, kind: "special", effect: "bumpNearby" },
+  { id: "lifter", name: "パワーリフターアイコン", shortName: "リフター", emoji: "🏆", radius: 34, color: "#2d2f38", outline: "#e94d46", score: 180, kind: "special", effect: "pressDown" },
+  { id: "coach", name: "ごすじんアイコン", shortName: "ごすじん", emoji: "🏃‍♀️", radius: 30, color: "#ffb6d0", outline: "#263154", score: 130, kind: "special", effect: "rerollOrTidy" },
 ];
 
 const onikuStages = [
@@ -113,7 +114,7 @@ function setCoachComment(type) {
 }
 
 function updateNextUI() {
-  nextIconEl.textContent = nextIcon.emoji;
+  nextIconEl.textContent = nextIcon.shortName;
   nextIconEl.style.borderColor = nextIcon.outline;
   nextIconEl.style.background = nextIcon.color;
   nextNameEl.textContent = nextIcon.name;
@@ -137,6 +138,7 @@ function updateOnikuStage() {
   if (newIndex !== currentStageIndex) {
     currentStageIndex = newIndex;
     setCoachComment("evolve");
+    showEvolutionEffect();
     onikuNameEl.classList.remove("stage-pop");
     void onikuNameEl.offsetWidth;
     onikuNameEl.classList.add("stage-pop");
@@ -308,7 +310,7 @@ function triggerSpecial(piece) {
   if (piece.usedSpecial) return;
   piece.usedSpecial = true;
   updateScore(piece.icon.score);
-  showCombo("SPECIAL!");
+  showCombo(getSpecialMessage(piece.icon));
   setCoachComment("merge");
   audioHooks.special();
 
@@ -346,6 +348,16 @@ function triggerSpecial(piece) {
   pieces = pieces.filter((target) => target !== piece);
 }
 
+function getSpecialMessage(icon) {
+  const messages = {
+    shiba: "おにくパワー！近くのアイコンが成長！",
+    macho: "マッチョブースト！盤面を押し出す！",
+    lifter: "リフタープレス！盤面を安定！",
+    coach: "ごすじん応援！NEXT更新！",
+  };
+  return messages[icon.id] || "SPECIAL!";
+}
+
 function affectNearby(source, radius, callback) {
   for (const target of pieces) {
     if (target === source || target.held || target.icon.kind === "special") continue;
@@ -374,6 +386,13 @@ function showCombo(text) {
   comboText.classList.remove("is-active");
   void comboText.offsetWidth;
   comboText.classList.add("is-active");
+}
+
+function showEvolutionEffect() {
+  showCombo("進化！");
+  boardWrapEl.classList.remove("is-evolving");
+  void boardWrapEl.offsetWidth;
+  boardWrapEl.classList.add("is-evolving");
 }
 
 function checkGameOver() {
@@ -422,11 +441,29 @@ function drawIcon(piece) {
   ctx.translate(piece.x, piece.y);
   ctx.rotate(piece.angle);
 
+  drawIconBase(ctx, icon, r);
+  drawIconSymbol(ctx, icon, r);
+
+  if (r >= 38) {
+    ctx.rotate(-piece.angle);
+    ctx.font = "900 10px Hiragino Sans, Yu Gothic, Meiryo, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(32, 34, 56, 0.82)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.92)";
+    ctx.lineWidth = 3;
+    ctx.strokeText(icon.shortName, 0, r * 0.58);
+    ctx.fillText(icon.shortName, 0, r * 0.58);
+  }
+  ctx.restore();
+}
+
+function drawIconBase(ctx, icon, r) {
   ctx.save();
   ctx.translate(4, 8);
   ctx.beginPath();
   ctx.arc(0, 0, r * 0.96, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(32, 34, 56, 0.18)";
+  ctx.fillStyle = "rgba(32, 34, 56, 0.2)";
   ctx.fill();
   ctx.restore();
 
@@ -441,30 +478,354 @@ function drawIcon(piece) {
   ctx.beginPath();
   ctx.arc(0, 0, r - 7, 0, Math.PI * 2);
   ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.54)";
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.58)";
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.arc(-r * 0.25, -r * 0.3, r * 0.22, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+  ctx.arc(-r * 0.26, -r * 0.32, r * 0.2, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
   ctx.fill();
+}
 
-  ctx.font = `${Math.floor(r * 0.86)}px "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+function drawIconSymbol(ctx, icon, r) {
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  switch (icon.id) {
+    case "water":
+      drawWaterIcon(ctx, r);
+      break;
+    case "towel":
+      drawTowelIcon(ctx, r);
+      break;
+    case "shaker":
+      drawShakerIcon(ctx, r);
+      break;
+    case "dumbbell":
+      drawDumbbellIcon(ctx, r);
+      break;
+    case "kettlebell":
+      drawKettlebellIcon(ctx, r);
+      break;
+    case "plate":
+      drawPlateIcon(ctx, r);
+      break;
+    case "barbell":
+      drawBarbellIcon(ctx, r);
+      break;
+    case "rack":
+      drawRackIcon(ctx, r);
+      break;
+    case "shiba":
+      drawShibaIcon(ctx, r);
+      break;
+    case "macho":
+      drawMachoIcon(ctx, r);
+      break;
+    case "lifter":
+      drawLifterIcon(ctx, r);
+      break;
+    case "coach":
+      drawCoachIcon(ctx, r);
+      break;
+    default:
+      drawTextFallback(ctx, icon.shortName || icon.name, r);
+      break;
+  }
+  ctx.restore();
+}
+
+function roundedRect(ctx, x, y, w, h, radius) {
+  const rr = Math.min(radius, Math.abs(w) / 2, Math.abs(h) / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.lineTo(x + w - rr, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+  ctx.lineTo(x + w, y + h - rr);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+  ctx.lineTo(x + rr, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+  ctx.lineTo(x, y + rr);
+  ctx.quadraticCurveTo(x, y, x + rr, y);
+}
+
+function drawWaterIcon(ctx, r) {
+  const w = r * 0.52;
+  const h = r * 1.08;
+  roundedRect(ctx, -w / 2, -h / 2 + r * 0.06, w, h, r * 0.14);
+  ctx.fillStyle = "#dff8ff";
+  ctx.fill();
+  ctx.lineWidth = r * 0.09;
+  ctx.strokeStyle = "#116c9d";
+  ctx.stroke();
+  roundedRect(ctx, -w * 0.28, -h / 2 - r * 0.13, w * 0.56, r * 0.24, r * 0.06);
+  ctx.fillStyle = "#2f9bd0";
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "#5ccdf4";
+  ctx.fillRect(-w * 0.36, -r * 0.08, w * 0.72, r * 0.44);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+  ctx.lineWidth = r * 0.05;
+  ctx.beginPath();
+  ctx.moveTo(-w * 0.18, -r * 0.34);
+  ctx.lineTo(-w * 0.18, r * 0.34);
+  ctx.stroke();
+}
+
+function drawTowelIcon(ctx, r) {
+  const w = r * 1.18;
+  const h = r * 0.72;
+  roundedRect(ctx, -w / 2, -h / 2, w, h, r * 0.16);
+  ctx.fillStyle = "#ffd0dc";
+  ctx.fill();
+  ctx.lineWidth = r * 0.09;
+  ctx.strokeStyle = "#c94b72";
+  ctx.stroke();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = r * 0.07;
+  for (let i = -1; i <= 1; i += 1) {
+    ctx.beginPath();
+    ctx.moveTo(-w * 0.35, i * h * 0.18);
+    ctx.lineTo(w * 0.35, i * h * 0.18);
+    ctx.stroke();
+  }
+  ctx.fillStyle = "#ff8fa8";
+  roundedRect(ctx, -w * 0.45, -h * 0.45, w * 0.18, h * 0.9, r * 0.08);
+  ctx.fill();
+}
+
+function drawShakerIcon(ctx, r) {
+  const top = r * 0.68;
+  const bottom = r * 0.48;
+  const h = r * 1.12;
+  ctx.beginPath();
+  ctx.moveTo(-top / 2, -h / 2 + r * 0.1);
+  ctx.lineTo(top / 2, -h / 2 + r * 0.1);
+  ctx.lineTo(bottom / 2, h / 2);
+  ctx.lineTo(-bottom / 2, h / 2);
+  ctx.closePath();
+  ctx.fillStyle = "#fff3b0";
+  ctx.fill();
+  ctx.lineWidth = r * 0.09;
+  ctx.strokeStyle = "#9b6300";
+  ctx.stroke();
+  roundedRect(ctx, -top * 0.62, -h / 2 - r * 0.12, top * 1.24, r * 0.24, r * 0.08);
+  ctx.fillStyle = "#f08e1d";
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  ctx.font = `900 ${r * 0.36}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("P", 0, r * 0.1);
+}
+
+function drawDumbbellIcon(ctx, r) {
+  ctx.strokeStyle = "#1d5f43";
+  ctx.lineWidth = r * 0.16;
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.54, 0);
+  ctx.lineTo(r * 0.54, 0);
+  ctx.stroke();
+  ctx.fillStyle = "#263154";
+  for (const side of [-1, 1]) {
+    roundedRect(ctx, side * r * 0.45 - side * r * 0.18, -r * 0.3, r * 0.26, r * 0.6, r * 0.08);
+    ctx.fill();
+    ctx.stroke();
+    roundedRect(ctx, side * r * 0.68 - side * r * 0.18, -r * 0.36, r * 0.24, r * 0.72, r * 0.08);
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function drawKettlebellIcon(ctx, r) {
+  ctx.strokeStyle = "#442889";
+  ctx.lineWidth = r * 0.1;
+  ctx.beginPath();
+  ctx.arc(0, r * 0.05, r * 0.48, 0, Math.PI * 2);
+  ctx.fillStyle = "#7352d6";
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, -r * 0.26, r * 0.38, Math.PI, 0);
+  ctx.strokeStyle = "#2f205e";
+  ctx.lineWidth = r * 0.16;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, -r * 0.24, r * 0.22, Math.PI, 0);
+  ctx.strokeStyle = "#cbbcff";
+  ctx.lineWidth = r * 0.06;
+  ctx.stroke();
+}
+
+function drawPlateIcon(ctx, r) {
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.55, 0, Math.PI * 2);
+  ctx.fillStyle = "#87909d";
+  ctx.fill();
+  ctx.lineWidth = r * 0.1;
+  ctx.strokeStyle = "#3f4754";
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.24, 0, Math.PI * 2);
+  ctx.fillStyle = "#f5f7fb";
+  ctx.fill();
+  ctx.stroke();
+  ctx.strokeStyle = "#cfd4dc";
+  ctx.lineWidth = r * 0.06;
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.42, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+function drawBarbellIcon(ctx, r) {
+  ctx.strokeStyle = "#263154";
+  ctx.lineWidth = r * 0.12;
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.68, 0);
+  ctx.lineTo(r * 0.68, 0);
+  ctx.stroke();
+  ctx.fillStyle = "#5f6876";
+  for (const side of [-1, 1]) {
+    for (let i = 0; i < 3; i += 1) {
+      roundedRect(ctx, side * (r * (0.4 + i * 0.12)) - side * r * 0.08, -r * 0.34, r * 0.12, r * 0.68, r * 0.04);
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+}
+
+function drawRackIcon(ctx, r) {
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = r * 0.09;
+  roundedRect(ctx, -r * 0.52, -r * 0.48, r * 1.04, r * 0.96, r * 0.08);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.32, -r * 0.48);
+  ctx.lineTo(-r * 0.32, r * 0.48);
+  ctx.moveTo(r * 0.32, -r * 0.48);
+  ctx.lineTo(r * 0.32, r * 0.48);
+  ctx.moveTo(-r * 0.52, -r * 0.08);
+  ctx.lineTo(r * 0.52, -r * 0.08);
+  ctx.stroke();
+  ctx.fillStyle = "#263154";
+  ctx.fillRect(-r * 0.42, r * 0.25, r * 0.84, r * 0.12);
+}
+
+function drawShibaIcon(ctx, r) {
+  ctx.fillStyle = "#fff3df";
+  ctx.beginPath();
+  ctx.arc(0, r * 0.05, r * 0.48, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#8a3d1a";
+  ctx.lineWidth = r * 0.08;
+  ctx.stroke();
+  ctx.fillStyle = "#f7943d";
+  for (const side of [-1, 1]) {
+    ctx.beginPath();
+    ctx.moveTo(side * r * 0.18, -r * 0.32);
+    ctx.lineTo(side * r * 0.48, -r * 0.62);
+    ctx.lineTo(side * r * 0.42, -r * 0.16);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.fillStyle = "#202238";
+  ctx.beginPath();
+  ctx.arc(-r * 0.17, -r * 0.02, r * 0.05, 0, Math.PI * 2);
+  ctx.arc(r * 0.17, -r * 0.02, r * 0.05, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(0, r * 0.13, r * 0.06, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#202238";
+  ctx.lineWidth = r * 0.04;
+  ctx.beginPath();
+  ctx.arc(0, r * 0.18, r * 0.18, 0.15 * Math.PI, 0.85 * Math.PI);
+  ctx.stroke();
+}
+
+function drawMachoIcon(ctx, r) {
+  ctx.fillStyle = "#ffd2ad";
+  ctx.beginPath();
+  ctx.arc(-r * 0.2, r * 0.05, r * 0.28, 0, Math.PI * 2);
+  ctx.arc(r * 0.24, -r * 0.05, r * 0.34, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#7a3f1c";
+  ctx.lineWidth = r * 0.08;
+  ctx.stroke();
+  ctx.strokeStyle = "#7a3f1c";
+  ctx.lineWidth = r * 0.12;
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.52, r * 0.28);
+  ctx.quadraticCurveTo(-r * 0.22, -r * 0.28, r * 0.1, r * 0.16);
+  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(r * 0.12, -r * 0.08, r * 0.07, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawLifterIcon(ctx, r) {
+  ctx.fillStyle = "#10131b";
+  roundedRect(ctx, -r * 0.46, -r * 0.34, r * 0.92, r * 0.75, r * 0.12);
+  ctx.fill();
+  ctx.strokeStyle = "#e94d46";
+  ctx.lineWidth = r * 0.08;
+  ctx.stroke();
+  ctx.fillStyle = "#e94d46";
+  roundedRect(ctx, -r * 0.44, r * 0.08, r * 0.88, r * 0.2, r * 0.04);
+  ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = r * 0.04;
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.18, -r * 0.08);
+  ctx.lineTo(-r * 0.04, -r * 0.08);
+  ctx.moveTo(r * 0.04, -r * 0.08);
+  ctx.lineTo(r * 0.18, -r * 0.08);
+  ctx.moveTo(-r * 0.16, -r * 0.22);
+  ctx.lineTo(r * 0.16, -r * 0.22);
+  ctx.stroke();
+}
+
+function drawCoachIcon(ctx, r) {
+  ctx.fillStyle = "#ffe2d0";
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.42, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#263154";
+  ctx.lineWidth = r * 0.07;
+  ctx.stroke();
+  ctx.strokeStyle = "#6a3b2a";
+  ctx.lineWidth = r * 0.14;
+  ctx.beginPath();
+  ctx.arc(0, -r * 0.1, r * 0.42, Math.PI * 1.05, Math.PI * 1.95);
+  ctx.stroke();
+  ctx.fillStyle = "#263154";
+  ctx.beginPath();
+  ctx.arc(-r * 0.14, 0, r * 0.045, 0, Math.PI * 2);
+  ctx.arc(r * 0.14, 0, r * 0.045, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#e94d7d";
+  ctx.lineWidth = r * 0.05;
+  ctx.beginPath();
+  ctx.arc(0, r * 0.1, r * 0.16, 0.12 * Math.PI, 0.88 * Math.PI);
+  ctx.stroke();
+  ctx.fillStyle = "#ff7ba7";
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.5, r * 0.5);
+  ctx.lineTo(0, r * 0.22);
+  ctx.lineTo(r * 0.5, r * 0.5);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawTextFallback(ctx, text, r) {
+  ctx.font = `900 ${Math.max(10, r * 0.34)}px sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "#202238";
-  ctx.shadowColor = "rgba(255, 255, 255, 0.85)";
-  ctx.shadowBlur = 3;
-  ctx.fillText(icon.emoji, 0, 2);
-  ctx.shadowBlur = 0;
-
-  if (r >= 38) {
-    ctx.rotate(-piece.angle);
-    ctx.font = "700 9px Hiragino Sans, Yu Gothic, Meiryo, sans-serif";
-    ctx.fillStyle = "rgba(32, 34, 56, 0.82)";
-    ctx.fillText(icon.name.replace("プロテイン", "").replace("アイコン", ""), 0, r * 0.55);
-  }
-  ctx.restore();
+  ctx.fillText(text, 0, 0);
 }
 
 function loop(time) {
