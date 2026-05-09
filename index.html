@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>わんわん！ワンモアレップ！</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="titleScreen" class="title-screen" aria-label="タイトル画面">
+        <div class="title-copy">
+          <p class="kicker">24時間ジム風の謎の建物へ、しばダッシュ。</p>
+          <h1>わんわん！<br />ワンモアレップ！</h1>
+          <p class="subtitle">ぼくだって、運動したいワン！</p>
+          <button id="startButton" class="primary-button" type="button">スタート</button>
+          <p class="story">
+            ごすじんを待つだけなんて、もう我慢できないワン。
+            “鍛えたい気持ち”が形になる筋肉空間で、おにく君のトレーニングが始まる！
+          </p>
+          <div class="story-panels" aria-label="ストーリー">
+            <article>
+              <span>1</span>
+              <p>24時間ジム風の建物の前で、今日もお留守番。</p>
+            </article>
+            <article>
+              <span>2</span>
+              <p>不思議な筋肉空間へ潜入。合体するほど、おにく君が変身！</p>
+            </article>
+          </div>
+        </div>
+        <div class="title-hero" aria-hidden="true">
+          <div class="mystery-gym">
+            <span class="sign">OPEN 24H</span>
+            <span class="door"></span>
+            <span class="window window-a"></span>
+            <span class="window window-b"></span>
+          </div>
+          <div class="onik-badge">🐕</div>
+        </div>
+        <div class="intro-strip" aria-label="キャラクター紹介">
+          <article><span>🏃‍♀️</span><strong>ごすじん</strong></article>
+          <article><span>🐕</span><strong>おにく</strong></article>
+          <article><span>💪</span><strong>マッチョマン</strong></article>
+          <article><span>🏆</span><strong>リフター</strong></article>
+        </div>
+        <div class="evolution-strip" aria-label="おにくの進化図">
+          <span>🐕<small>ふつう</small></span>
+          <span>🐕‍🦺<small>やる気</small></span>
+          <span>🎽<small>フィットネス</small></span>
+          <span>💪<small>マッスル</small></span>
+          <span>🔥<small>パワーしば</small></span>
+          <span>🏋️<small>マッチョしば</small></span>
+          <span>🏆<small>リフターしば</small></span>
+          <span>⚡<small>ビースト</small></span>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="game-screen is-hidden" aria-label="ゲーム画面">
+        <header class="game-header">
+          <div class="stat-card">
+            <span class="stat-label">SCORE</span>
+            <strong id="score">0</strong>
+          </div>
+          <div class="oniku-status" id="onikuStatus">
+            <span id="onikuIcon" class="oniku-icon">🐕</span>
+            <div>
+              <span class="stat-label">現在のおにく君</span>
+              <strong id="onikuName">ふつうのおにく君</strong>
+            </div>
+          </div>
+          <button id="restartButton" class="ghost-button" type="button">リトライ</button>
+        </header>
+
+        <div class="play-layout">
+          <section class="board-wrap" aria-label="プレイエリア">
+            <div class="board-topline">ここを超えたらおしまいだワン</div>
+            <canvas id="gameCanvas" width="420" height="620"></canvas>
+            <div id="comboText" class="combo-text" aria-live="polite"></div>
+            <div id="gameOverPanel" class="game-over is-hidden" role="dialog" aria-modal="true">
+              <h2>ゲームオーバー</h2>
+              <p>おにく君、ちょっと休憩だワン。</p>
+              <button id="retryButton" class="primary-button" type="button">もう一回</button>
+            </div>
+          </section>
+
+          <aside class="side-panel">
+            <div class="coach-card">
+              <div class="coach-face">🏃‍♀️</div>
+              <div class="speech-bubble">
+                <span class="speaker">ごすじん</span>
+                <p id="coachComment">いい感じだよ、おにく！</p>
+              </div>
+            </div>
+
+            <div class="next-card">
+              <span class="stat-label">NEXT</span>
+              <div id="nextIcon" class="next-icon">💧</div>
+              <strong id="nextName">水ボトル</strong>
+            </div>
+
+            <div class="help-card">
+              <p>クリック、タップ、左右キーで位置を決めて、同じアイコンを合体。</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="main.js"></script>
+  </body>
+</html>
