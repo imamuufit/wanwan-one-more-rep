@@ -482,7 +482,7 @@ button {
 }
 
 .stage-track-card {
-  padding: 12px;
+  padding: 8px;
   background: rgba(255, 250, 245, 0.94);
   border: 2px solid var(--line);
   border-radius: 8px;
@@ -491,17 +491,17 @@ button {
 
 .stage-track {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 8px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 6px;
 }
 
 .stage-node {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 74px;
-  padding: 7px 4px;
+  min-height: 42px;
+  padding: 4px 2px;
   font-weight: 1000;
   background: #ffffff;
   border: 2px solid rgba(32, 34, 56, 0.14);
@@ -511,13 +511,13 @@ button {
 }
 
 .stage-node b {
-  font-size: 26px;
+  font-size: 18px;
 }
 
 .stage-thumb {
   display: none;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   filter: drop-shadow(0 4px 0 rgba(32, 34, 56, 0.12));
 }
@@ -531,6 +531,7 @@ button {
 }
 
 .stage-node small {
+  display: none;
   margin-top: 2px;
   color: var(--navy);
   font-size: 10px;
@@ -587,6 +588,7 @@ button {
 
 .stat-card,
 .oniku-status,
+.oniku-live-card,
 .next-card,
 .coach-card,
 .help-card,
@@ -639,6 +641,7 @@ button {
 }
 
 .oniku-icon img,
+.oniku-live-art img,
 .coach-face img,
 .next-icon img {
   width: 86%;
@@ -653,10 +656,73 @@ button {
 
 .play-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 520px) minmax(240px, 1fr);
-  gap: 16px;
-  align-items: start;
+  grid-template-columns: minmax(150px, 0.42fr) minmax(320px, 500px) minmax(190px, 0.5fr);
+  gap: 10px;
+  align-items: stretch;
   justify-content: center;
+}
+
+.oniku-live-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 8px;
+  min-height: 360px;
+  padding: 10px;
+  text-align: center;
+  border-color: rgba(247, 148, 61, 0.62);
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255, 209, 102, 0.42), transparent 34%),
+    linear-gradient(180deg, rgba(255, 250, 245, 0.96), rgba(255, 236, 218, 0.94));
+}
+
+.oniku-live-art {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  color: var(--orange);
+  font-size: 92px;
+  border: 3px solid rgba(247, 148, 61, 0.38);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.68);
+  overflow: hidden;
+}
+
+.oniku-live-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(1.18);
+}
+
+.oniku-live-card strong {
+  color: var(--navy);
+  font-size: clamp(16px, 2vw, 22px);
+  line-height: 1.18;
+}
+
+.mini-stage-track {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.mini-stage-track span {
+  display: block;
+  aspect-ratio: 1;
+  border: 2px solid rgba(38, 49, 84, 0.24);
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.mini-stage-track span.is-cleared {
+  border-color: rgba(98, 215, 178, 0.9);
+  background: #dcfff0;
+}
+
+.mini-stage-track span.is-current {
+  border-color: var(--yellow);
+  background: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.38);
 }
 
 .board-wrap {
@@ -807,34 +873,36 @@ canvas {
 
 .side-panel {
   display: grid;
-  gap: 12px;
+  align-content: start;
+  gap: 8px;
 }
 
 .coach-card {
   display: flex;
-  gap: 12px;
-  padding: 14px;
+  gap: 8px;
+  padding: 10px;
   border-color: rgba(255, 123, 167, 0.48);
 }
 
 .coach-face {
   display: grid;
-  flex: 0 0 54px;
+  flex: 0 0 86px;
   place-items: center;
-  width: 64px;
-  height: 64px;
+  width: 86px;
+  height: 118px;
+  overflow: hidden;
   font-size: 38px;
   background: #ffffff;
-  border: 4px solid var(--pink);
-  border-radius: 50%;
+  border: 3px solid var(--pink);
+  border-radius: 8px;
   box-shadow: 0 6px 0 rgba(255, 123, 167, 0.24);
 }
 
 .speech-bubble {
   position: relative;
   flex: 1;
-  min-height: 92px;
-  padding: 12px;
+  min-height: 74px;
+  padding: 10px;
   background: #ffffff;
   border: 4px solid var(--pink);
   border-radius: 8px;
@@ -864,11 +932,11 @@ canvas {
 .help-card p {
   margin: 4px 0 0;
   font-weight: 800;
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .next-card {
-  padding: 14px;
+  padding: 10px;
   text-align: center;
 }
 
@@ -877,9 +945,9 @@ canvas {
   place-items: center;
   grid-template-rows: 1fr auto;
   gap: 2px;
-  width: 86px;
-  height: 86px;
-  margin: 10px auto 8px;
+  width: 104px;
+  height: 104px;
+  margin: 4px auto;
   color: var(--ink);
   font-size: 18px;
   font-weight: 1000;
@@ -908,7 +976,7 @@ canvas {
 }
 
 .help-card {
-  padding: 14px;
+  padding: 10px;
 }
 
 @keyframes comboPop {
@@ -1039,6 +1107,14 @@ canvas {
 
   .side-panel {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .oniku-live-card {
+    min-height: 210px;
+  }
+
+  .oniku-live-art {
+    min-height: 128px;
   }
 
   .coach-card,
@@ -1237,6 +1313,10 @@ canvas {
     gap: 6px;
   }
 
+  body.is-playing .oniku-live-card {
+    display: none;
+  }
+
   body.is-playing .board-wrap {
     align-self: center;
     border-width: 6px;
@@ -1295,8 +1375,9 @@ canvas {
   }
 
   body.is-playing .coach-face {
-    width: 42px;
-    height: 42px;
+    flex-basis: 54px;
+    width: 54px;
+    height: 66px;
     font-size: 24px;
     border-width: 2px;
   }

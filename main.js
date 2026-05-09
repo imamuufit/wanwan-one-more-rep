@@ -18,6 +18,9 @@ const boardWrapEl = document.querySelector(".board-wrap");
 const coachFaceEl = document.querySelector(".coach-face");
 const gameLogoEl = document.querySelector(".game-logo");
 const titleLogoImageEl = document.getElementById("titleLogoImage");
+const onikuLiveArtEl = document.getElementById("onikuLiveArt");
+const onikuLiveNameEl = document.getElementById("onikuLiveName");
+const miniStageTrackEl = document.getElementById("miniStageTrack");
 
 const BASE_WIDTH = 420;
 const DESKTOP_BASE_HEIGHT = 620;
@@ -29,7 +32,8 @@ const GRAVITY = 0.22;
 const FRICTION = 0.992;
 const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
-const ASSET_VERSION = "20260509-10";
+const ASSET_VERSION = "20260509-11";
+const USE_TITLE_IMAGE_LOGO = false;
 const imageCache = new Map();
 const failedAssets = new Set();
 let loadedAssetCount = 0;
@@ -120,6 +124,7 @@ let animationId = null;
 let normalCommentTimer = null;
 let lastTime = 0;
 let baseHeight = getBaseHeight();
+let titleLogoNoticeShown = false;
 
 function isMobileViewport() {
   return window.matchMedia("(max-width: 520px)").matches;
@@ -203,7 +208,9 @@ function preloadGameAssets() {
   preloadAssetGroup("coach", CHARACTER_ASSETS.coach);
   preloadAssetGroup("macho", CHARACTER_ASSETS.macho);
   preloadAssetGroup("lifter", CHARACTER_ASSETS.lifter);
-  Object.entries(UI_ASSETS).forEach(([key, src]) => preloadAssetWithFlatFallback(`ui-${key}`, src));
+  if (USE_TITLE_IMAGE_LOGO) {
+    Object.entries(UI_ASSETS).forEach(([key, src]) => preloadAssetWithFlatFallback(`ui-${key}`, src));
+  }
   Object.entries(BACKGROUND_ASSETS).forEach(([key, src]) => preloadAssetWithFlatFallback(`bg-${key}`, src));
 }
 
@@ -239,7 +246,18 @@ function updateCoachVisual(type = "normal") {
 
 function updateTitleLogo() {
   if (!titleLogoImageEl || !gameLogoEl) return;
+  if (!USE_TITLE_IMAGE_LOGO) {
+    titleLogoImageEl.classList.remove("is-loaded");
+    gameLogoEl.classList.remove("is-replaced");
+    titleLogoImageEl.removeAttribute("src");
+    if (!titleLogoNoticeShown) {
+      console.info("Title logo image disabled; using CSS logo.");
+      titleLogoNoticeShown = true;
+    }
+    return;
+  }
   const image = getCachedImage("ui-logo");
+  console.info("Title logo image src:", image ? image.src : "fallback CSS logo");
   titleLogoImageEl.classList.toggle("is-loaded", Boolean(image));
   gameLogoEl.classList.toggle("is-replaced", Boolean(image));
   if (image && titleLogoImageEl.src !== image.src) {
@@ -350,6 +368,7 @@ function updateOnikuStageVisual() {
   onikuIconEl.dataset.key = stage.imageKey;
   onikuIconEl.title = `${stage.imageKey} / ${stage.name}`;
   onikuIconEl.innerHTML = image ? `<img src="${image.src}" alt="" data-key="${stage.imageKey}" title="${stage.imageKey} / ${stage.name}">` : stage.icon;
+  updateOnikuLiveCard(stage, image);
 }
 
 function initializeStageTrack() {
@@ -364,6 +383,11 @@ function initializeStageTrack() {
       `,
     )
     .join("");
+  if (miniStageTrackEl) {
+    miniStageTrackEl.innerHTML = onikuStages
+      .map((stage, index) => `<span data-stage="${index}" data-key="${stage.imageKey}" title="${stage.imageKey} / ${stage.name}"></span>`)
+      .join("");
+  }
   updateStageTrack();
 }
 
@@ -384,6 +408,23 @@ function updateStageTrack() {
     node.classList.toggle("is-current", index === currentStageIndex);
     node.classList.toggle("is-cleared", index < currentStageIndex);
   });
+  if (miniStageTrackEl) {
+    miniStageTrackEl.querySelectorAll("span").forEach((node, index) => {
+      node.classList.toggle("is-current", index === currentStageIndex);
+      node.classList.toggle("is-cleared", index < currentStageIndex);
+    });
+  }
+}
+
+function updateOnikuLiveCard(stage, image) {
+  if (!onikuLiveArtEl || !onikuLiveNameEl || !stage) return;
+  onikuLiveArtEl.dataset.key = stage.imageKey;
+  onikuLiveArtEl.title = `${stage.imageKey} / ${stage.name}`;
+  onikuLiveArtEl.innerHTML = image ? `<img src="${image.src}" alt="" data-key="${stage.imageKey}" title="${stage.imageKey} / ${stage.name}">` : stage.icon;
+  onikuLiveNameEl.textContent = stage.name;
+  onikuLiveArtEl.classList.remove("stage-pop");
+  void onikuLiveArtEl.offsetWidth;
+  onikuLiveArtEl.classList.add("stage-pop");
 }
 
 function prepareDrop() {
