@@ -15,6 +15,9 @@ const gameOverPanel = document.getElementById("gameOverPanel");
 const comboText = document.getElementById("comboText");
 const stageTrackEl = document.getElementById("stageTrack");
 const boardWrapEl = document.querySelector(".board-wrap");
+const coachFaceEl = document.querySelector(".coach-face");
+const gameLogoEl = document.querySelector(".game-logo");
+const titleLogoImageEl = document.getElementById("titleLogoImage");
 
 const BASE_WIDTH = 420;
 const BASE_HEIGHT = 620;
@@ -24,35 +27,67 @@ const GRAVITY = 0.22;
 const FRICTION = 0.992;
 const BOUNCE = 0.18;
 const SPECIAL_CHANCE = 0.11;
+const ASSET_VERSION = "20260509-04";
+const imageCache = new Map();
+const failedAssets = new Set();
+let loadedAssetCount = 0;
 
 const normalIcons = [
-  { id: "water", name: "水ボトル", shortName: "水", imageKey: "icon-water", assetPath: null, emoji: "💧", radius: 22, color: "#79d9ff", outline: "#257aa8", score: 10 },
-  { id: "towel", name: "タオル", shortName: "タオル", imageKey: "icon-towel", assetPath: null, emoji: "🧻", radius: 26, color: "#ffffff", outline: "#ff8fa8", score: 24 },
-  { id: "shaker", name: "プロテインシェイカー", shortName: "シェイカー", imageKey: "icon-shaker", assetPath: null, emoji: "🥤", radius: 30, color: "#ffd166", outline: "#d98600", score: 52 },
-  { id: "dumbbell", name: "ダンベル", shortName: "DB", imageKey: "icon-dumbbell", assetPath: null, emoji: "🏋️", radius: 35, color: "#a7e8bd", outline: "#2f8f60", score: 110 },
-  { id: "kettlebell", name: "ケトルベル", shortName: "KB", imageKey: "icon-kettlebell", assetPath: null, emoji: "🔔", radius: 40, color: "#c8b6ff", outline: "#6847b8", score: 230 },
-  { id: "plate", name: "プレート", shortName: "皿", imageKey: "icon-plate", assetPath: null, emoji: "⚙️", radius: 46, color: "#d7dce5", outline: "#5f6876", score: 480 },
-  { id: "barbell", name: "バーベル", shortName: "バー", imageKey: "icon-barbell", assetPath: null, emoji: "🏋️‍♂️", radius: 52, color: "#ffb36c", outline: "#b14e1e", score: 990 },
-  { id: "rack", name: "パワーラック", shortName: "ラック", imageKey: "icon-rack", assetPath: null, emoji: "▣", radius: 60, color: "#f15d5d", outline: "#263154", score: 2100 },
+  { id: "water", name: "水ボトル", shortName: "水", imageKey: "icon-water", assetPath: "assets/icons/icon_water.png", emoji: "💧", radius: 22, color: "#79d9ff", outline: "#257aa8", score: 10 },
+  { id: "towel", name: "タオル", shortName: "タオル", imageKey: "icon-towel", assetPath: "assets/icons/icon_towel.png", emoji: "🧻", radius: 26, color: "#ffffff", outline: "#ff8fa8", score: 24 },
+  { id: "shaker", name: "プロテインシェイカー", shortName: "シェイカー", imageKey: "icon-shaker", assetPath: "assets/icons/icon_shaker.png", emoji: "🥤", radius: 30, color: "#ffd166", outline: "#d98600", score: 52 },
+  { id: "dumbbell", name: "ダンベル", shortName: "DB", imageKey: "icon-dumbbell", assetPath: "assets/icons/icon_dumbbell.png", emoji: "🏋️", radius: 35, color: "#a7e8bd", outline: "#2f8f60", score: 110 },
+  { id: "kettlebell", name: "ケトルベル", shortName: "KB", imageKey: "icon-kettlebell", assetPath: "assets/icons/icon_kettlebell.png", emoji: "🔔", radius: 40, color: "#c8b6ff", outline: "#6847b8", score: 230 },
+  { id: "plate", name: "プレート", shortName: "皿", imageKey: "icon-plate", assetPath: "assets/icons/icon_plate.png", emoji: "⚙️", radius: 46, color: "#d7dce5", outline: "#5f6876", score: 480 },
+  { id: "barbell", name: "バーベル", shortName: "バー", imageKey: "icon-barbell", assetPath: "assets/icons/icon_barbell.png", emoji: "🏋️‍♂️", radius: 52, color: "#ffb36c", outline: "#b14e1e", score: 990 },
+  { id: "rack", name: "パワーラック", shortName: "ラック", imageKey: "icon-rack", assetPath: "assets/icons/icon_rack.png", emoji: "▣", radius: 60, color: "#f15d5d", outline: "#263154", score: 2100 },
 ];
 
 const specialIcons = [
-  { id: "shiba", name: "柴犬アイコン", shortName: "おにく", imageKey: "icon-shiba", assetPath: null, emoji: "🐕", radius: 30, color: "#f7943d", outline: "#b84e22", score: 120, kind: "special", effect: "upgradeNearby" },
-  { id: "macho", name: "マッチョマンアイコン", shortName: "マッチョ", imageKey: "icon-macho", assetPath: null, emoji: "💪", radius: 34, color: "#d9a1ff", outline: "#9a3fc7", score: 150, kind: "special", effect: "bumpNearby" },
-  { id: "lifter", name: "パワーリフターアイコン", shortName: "リフター", imageKey: "icon-lifter", assetPath: null, emoji: "🏆", radius: 34, color: "#2d2f38", outline: "#e94d46", score: 180, kind: "special", effect: "pressDown" },
-  { id: "coach", name: "ごすじんアイコン", shortName: "ごすじん", imageKey: "icon-coach", assetPath: null, emoji: "🏃‍♀️", radius: 30, color: "#ffb6d0", outline: "#263154", score: 130, kind: "special", effect: "rerollOrTidy" },
+  { id: "shiba", name: "柴犬アイコン", shortName: "おにく", imageKey: "icon-shiba", assetPath: "assets/icons/icon_shiba.png", emoji: "🐕", radius: 30, color: "#f7943d", outline: "#b84e22", score: 120, kind: "special", effect: "upgradeNearby" },
+  { id: "macho", name: "マッチョマンアイコン", shortName: "マッチョ", imageKey: "icon-macho", assetPath: "assets/icons/icon_macho.png", emoji: "💪", radius: 34, color: "#d9a1ff", outline: "#9a3fc7", score: 150, kind: "special", effect: "bumpNearby" },
+  { id: "lifter", name: "パワーリフターアイコン", shortName: "リフター", imageKey: "icon-lifter", assetPath: "assets/icons/icon_lifter.png", emoji: "🏆", radius: 34, color: "#2d2f38", outline: "#e94d46", score: 180, kind: "special", effect: "pressDown" },
+  { id: "coach", name: "ごすじんアイコン", shortName: "ごすじん", imageKey: "icon-coach", assetPath: "assets/icons/icon_coach.png", emoji: "🏃‍♀️", radius: 30, color: "#ffb6d0", outline: "#263154", score: 130, kind: "special", effect: "rerollOrTidy" },
 ];
 
 const onikuStages = [
-  { name: "ふつうのおにく君", icon: "🐕", score: 0 },
-  { name: "やる気おにく君", icon: "🐕‍🦺", score: 180 },
-  { name: "フィットネスおにく君", icon: "🎽", score: 480 },
-  { name: "マッスルおにく君", icon: "💪", score: 980 },
-  { name: "パワーしば", icon: "🔥", score: 1700 },
-  { name: "マッチョしば", icon: "🏋️", score: 2800 },
-  { name: "リフターしば", icon: "🏆", score: 4300 },
-  { name: "わんモア・ビースト", icon: "⚡", score: 6200 },
+  { name: "ふつうのおにく君", shortName: "ふつう", imageKey: "oniku-stage-01", assetPath: "assets/characters/oniku/oniku_stage_01_normal.png", icon: "🐕", score: 0 },
+  { name: "やる気おにく君", shortName: "やる気", imageKey: "oniku-stage-02", assetPath: "assets/characters/oniku/oniku_stage_02_motivated.png", icon: "🐕‍🦺", score: 180 },
+  { name: "フィットネスおにく君", shortName: "フィットネス", imageKey: "oniku-stage-03", assetPath: "assets/characters/oniku/oniku_stage_03_fitness.png", icon: "🎽", score: 480 },
+  { name: "マッスルおにく君", shortName: "マッスル", imageKey: "oniku-stage-04", assetPath: "assets/characters/oniku/oniku_stage_04_muscle.png", icon: "💪", score: 980 },
+  { name: "パワーしば", shortName: "パワー", imageKey: "oniku-stage-05", assetPath: "assets/characters/oniku/oniku_stage_05_power_shiba.png", icon: "🔥", score: 1700 },
+  { name: "マッチョしば", shortName: "マッチョ", imageKey: "oniku-stage-06", assetPath: "assets/characters/oniku/oniku_stage_06_macho_shiba.png", icon: "🏋️", score: 2800 },
+  { name: "リフターしば", shortName: "リフター", imageKey: "oniku-stage-07", assetPath: "assets/characters/oniku/oniku_stage_07_lifter_shiba.png", icon: "🏆", score: 4300 },
+  { name: "わんモア・ビースト", shortName: "ビースト", imageKey: "oniku-stage-08", assetPath: "assets/characters/oniku/oniku_stage_08_one_more_beast.png", icon: "⚡", score: 6200 },
 ];
+
+const CHARACTER_ASSETS = {
+  coach: {
+    idle: "assets/characters/coach/char_coach_idle.png",
+    cheer: "assets/characters/coach/char_coach_cheer.png",
+    surprise: "assets/characters/coach/char_coach_surprise.png",
+    worry: "assets/characters/coach/char_coach_worry.png",
+    happy: "assets/characters/coach/char_coach_happy.png",
+  },
+  macho: {
+    flex: "assets/characters/macho/char_macho_flex.png",
+    excited: "assets/characters/macho/char_macho_excited.png",
+  },
+  lifter: {
+    focus: "assets/characters/lifter/char_lifter_focus.png",
+    approve: "assets/characters/lifter/char_lifter_approve.png",
+  },
+};
+
+const UI_ASSETS = {
+  logo: "assets/ui/logo_wanwan_one_more_rep.png",
+};
+
+const BACKGROUND_ASSETS = {
+  title: "assets/backgrounds/bg_title_gym_outside.png",
+  game: "assets/backgrounds/bg_game_mystery_gym.png",
+  evolution: "assets/backgrounds/bg_evolution_burst.png",
+};
 
 const comments = {
   normal: ["いい感じだよ、おにく！", "まだいけるよ！", "あともうわんレップ！", "その調子！", "しっぽ上がってるよ！"],
@@ -82,8 +117,114 @@ let animationId = null;
 let normalCommentTimer = null;
 let lastTime = 0;
 
+function setupCanvasDpr() {
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  canvas.width = BASE_WIDTH * dpr;
+  canvas.height = BASE_HEIGHT * dpr;
+  canvas.style.aspectRatio = `${BASE_WIDTH} / ${BASE_HEIGHT}`;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
+}
+
+function versionAssetPath(src) {
+  if (!src) return null;
+  return `${src}${src.includes("?") ? "&" : "?"}v=${ASSET_VERSION}`;
+}
+
+function preloadImage(key, src) {
+  if (!key || !src || imageCache.has(key) || failedAssets.has(key)) return;
+  const image = new Image();
+  image.onload = () => {
+    imageCache.set(key, image);
+    loadedAssetCount += 1;
+    console.info("Asset loaded:", src);
+    updateAssetDrivenUI();
+  };
+  image.onerror = () => {
+    failedAssets.add(key);
+    console.warn("Asset failed to load:", src);
+  };
+  image.src = versionAssetPath(src);
+}
+
+function getCachedImage(key) {
+  return imageCache.get(key) || null;
+}
+
+function preloadGameAssets() {
+  [...normalIcons, ...specialIcons].forEach((icon) => preloadImage(icon.imageKey, icon.assetPath));
+  onikuStages.forEach((stage) => preloadImage(stage.imageKey, stage.assetPath));
+  Object.entries(CHARACTER_ASSETS.coach).forEach(([state, src]) => preloadImage(`coach-${state}`, src));
+  Object.entries(CHARACTER_ASSETS.macho).forEach(([state, src]) => preloadImage(`macho-${state}`, src));
+  Object.entries(CHARACTER_ASSETS.lifter).forEach(([state, src]) => preloadImage(`lifter-${state}`, src));
+  Object.entries(UI_ASSETS).forEach(([key, src]) => preloadImage(`ui-${key}`, src));
+  Object.entries(BACKGROUND_ASSETS).forEach(([key, src]) => preloadImage(`bg-${key}`, src));
+}
+
+function updateAssetDrivenUI() {
+  updateNextUI();
+  updateOnikuStageVisual();
+  updateCoachVisual();
+  updateStageTrack();
+  updateTitleLogo();
+  updateBackgroundAssets();
+  console.info(`Assets ready: ${loadedAssetCount} loaded, ${failedAssets.size} failed`);
+}
+
+function getCoachAssetState(type = "normal") {
+  const stateByType = {
+    normal: "idle",
+    merge: "cheer",
+    cheer: "cheer",
+    evolve: "surprise",
+    pinch: "worry",
+    danger: "worry",
+    success: "happy",
+  };
+  return stateByType[type] || "idle";
+}
+
+function updateCoachVisual(type = "normal") {
+  if (!coachFaceEl) return;
+  const state = getCoachAssetState(type);
+  const image = getCachedImage(`coach-${state}`);
+  coachFaceEl.innerHTML = image ? `<img src="${image.src}" alt="ごすじん">` : "🏃‍♀️";
+}
+
+function updateTitleLogo() {
+  if (!titleLogoImageEl || !gameLogoEl) return;
+  const image = getCachedImage("ui-logo");
+  titleLogoImageEl.classList.toggle("is-loaded", Boolean(image));
+  gameLogoEl.classList.toggle("is-replaced", Boolean(image));
+  if (image && titleLogoImageEl.src !== image.src) {
+    titleLogoImageEl.src = image.src;
+  }
+}
+
+function applyAssetBackground(element, key) {
+  if (!element) return;
+  const image = getCachedImage(`bg-${key}`);
+  element.classList.toggle("has-asset-bg", Boolean(image));
+  if (image) {
+    element.style.setProperty("--asset-bg", `url("${image.src}")`);
+  } else {
+    element.style.removeProperty("--asset-bg");
+  }
+}
+
+function updateBackgroundAssets() {
+  applyAssetBackground(titleScreen, "title");
+  applyAssetBackground(gameScreen, "game");
+  const evolutionImage = getCachedImage("bg-evolution");
+  boardWrapEl.classList.toggle("has-evolution-bg", Boolean(evolutionImage));
+  if (evolutionImage) {
+    boardWrapEl.style.setProperty("--evolution-bg", `url("${evolutionImage.src}")`);
+  } else {
+    boardWrapEl.style.removeProperty("--evolution-bg");
+  }
 }
 
 function pickNextIcon() {
@@ -111,10 +252,16 @@ function createPiece(icon, x, y, held = false) {
 
 function setCoachComment(type) {
   coachCommentEl.textContent = pickRandom(comments[type] || comments.normal);
+  updateCoachVisual(type);
 }
 
 function updateNextUI() {
-  nextIconEl.textContent = nextIcon.shortName;
+  if (!nextIcon) return;
+  const image = getCachedImage(nextIcon.imageKey);
+  nextIconEl.classList.toggle("has-image", Boolean(image));
+  nextIconEl.innerHTML = image
+    ? `<img class="next-art" src="${image.src}" alt=""><span class="next-short">${nextIcon.shortName}</span>`
+    : `<span class="next-short">${nextIcon.shortName}</span>`;
   nextIconEl.style.borderColor = nextIcon.outline;
   nextIconEl.style.background = nextIcon.color;
   nextNameEl.textContent = nextIcon.name;
@@ -145,8 +292,15 @@ function updateOnikuStage() {
   }
 
   onikuNameEl.textContent = onikuStages[currentStageIndex].name;
-  onikuIconEl.textContent = onikuStages[currentStageIndex].icon;
+  updateOnikuStageVisual();
   updateStageTrack();
+}
+
+function updateOnikuStageVisual() {
+  const stage = onikuStages[currentStageIndex];
+  if (!stage) return;
+  const image = getCachedImage(stage.imageKey);
+  onikuIconEl.innerHTML = image ? `<img src="${image.src}" alt="">` : stage.icon;
 }
 
 function initializeStageTrack() {
@@ -154,8 +308,9 @@ function initializeStageTrack() {
     .map(
       (stage, index) => `
         <div class="stage-node" data-stage="${index}">
+          <img class="stage-thumb" alt="">
           <b>${stage.icon}</b>
-          <small>${stage.name.replace("おにく君", "")}</small>
+          <small>${stage.shortName}</small>
         </div>
       `,
     )
@@ -166,6 +321,11 @@ function initializeStageTrack() {
 function updateStageTrack() {
   if (!stageTrackEl) return;
   stageTrackEl.querySelectorAll(".stage-node").forEach((node, index) => {
+    const stage = onikuStages[index];
+    const image = getCachedImage(stage.imageKey);
+    const thumb = node.querySelector(".stage-thumb");
+    if (image && thumb) thumb.src = image.src;
+    node.classList.toggle("has-image", Boolean(image));
     node.classList.toggle("is-current", index === currentStageIndex);
     node.classList.toggle("is-cleared", index < currentStageIndex);
   });
@@ -388,8 +548,15 @@ function showCombo(text) {
   comboText.classList.add("is-active");
 }
 
+function getEvolutionMessage(stageName) {
+  const previewMessages = {
+    "やる気おにく君": "進化！\nやる気おにく君へ！",
+  };
+  return previewMessages[stageName] || `進化！\n${stageName}へ！`;
+}
+
 function showEvolutionEffect(stageName) {
-  showCombo(`進化！\n${stageName}へ！`);
+  showCombo(getEvolutionMessage(stageName));
   boardWrapEl.classList.remove("is-evolving");
   void boardWrapEl.offsetWidth;
   boardWrapEl.classList.add("is-evolving");
@@ -442,7 +609,9 @@ function drawIcon(piece) {
   ctx.rotate(piece.angle);
 
   drawIconBase(ctx, icon, r);
-  drawIconSymbol(ctx, icon, r);
+  if (!drawIconImage(ctx, icon, r)) {
+    drawIconSymbol(ctx, icon, r);
+  }
 
   if (r >= 38) {
     ctx.rotate(-piece.angle);
@@ -485,6 +654,20 @@ function drawIconBase(ctx, icon, r) {
   ctx.arc(-r * 0.26, -r * 0.32, r * 0.2, 0, Math.PI * 2);
   ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
   ctx.fill();
+}
+
+function drawIconImage(ctx, icon, r) {
+  const image = getCachedImage(icon.imageKey);
+  if (!image) return false;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2);
+  ctx.clip();
+  const size = r * 1.5;
+  ctx.drawImage(image, -size / 2, -size / 2, size, size);
+  ctx.restore();
+  return true;
 }
 
 function drawIconSymbol(ctx, icon, r) {
@@ -897,8 +1080,14 @@ window.addEventListener("keydown", (event) => {
   }
 });
 
+window.addEventListener("resize", setupCanvasDpr);
+
+setupCanvasDpr();
+preloadGameAssets();
 nextIcon = pickNextIcon();
 updateNextUI();
 updateOnikuStage();
 initializeStageTrack();
 setCoachComment("normal");
+updateTitleLogo();
+updateBackgroundAssets();

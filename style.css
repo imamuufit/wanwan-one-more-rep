@@ -100,6 +100,21 @@ button {
   transform: rotate(-1.5deg);
 }
 
+.game-logo.is-replaced {
+  display: none;
+}
+
+.asset-logo {
+  display: none;
+  width: min(720px, 100%);
+  margin: 0 0 10px;
+  filter: drop-shadow(0 10px 0 rgba(32, 34, 56, 0.18));
+}
+
+.asset-logo.is-loaded {
+  display: block;
+}
+
 .logo-wan,
 .logo-rep {
   display: block;
@@ -317,6 +332,24 @@ button {
   min-height: 430px;
 }
 
+.title-screen.has-asset-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+.title-screen.has-asset-bg::before,
+.game-screen.has-asset-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--asset-bg);
+  background-position: center;
+  background-size: cover;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
 .mystery-gym {
   position: absolute;
   right: 0;
@@ -479,6 +512,22 @@ button {
   font-size: 26px;
 }
 
+.stage-thumb {
+  display: none;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 0 rgba(32, 34, 56, 0.12));
+}
+
+.stage-node.has-image b {
+  display: none;
+}
+
+.stage-node.has-image .stage-thumb {
+  display: block;
+}
+
 .stage-node small {
   margin-top: 2px;
   color: var(--navy);
@@ -587,6 +636,15 @@ button {
   border-radius: 50%;
 }
 
+.oniku-icon img,
+.coach-face img,
+.next-icon img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  display: block;
+}
+
 .stage-pop {
   animation: stagePop 0.55s ease both;
 }
@@ -646,6 +704,19 @@ button {
 
 .board-wrap.is-evolving::after {
   animation: evolveSpark 0.85s ease both;
+}
+
+.board-wrap.has-evolution-bg.is-evolving::after {
+  content: "";
+  left: 50%;
+  width: min(72%, 320px);
+  height: 220px;
+  background-image: var(--evolution-bg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 10px 18px rgba(255, 183, 65, 0.35));
+  animation-name: evolveAssetSpark;
 }
 
 canvas {
@@ -802,6 +873,8 @@ canvas {
 .next-icon {
   display: grid;
   place-items: center;
+  grid-template-rows: 1fr auto;
+  gap: 2px;
   width: 86px;
   height: 86px;
   margin: 10px auto 8px;
@@ -814,6 +887,22 @@ canvas {
   border: 5px solid var(--mint);
   border-radius: 50%;
   box-shadow: inset 0 -8px 0 rgba(32, 34, 56, 0.1), 0 9px 0 rgba(32, 34, 56, 0.12);
+}
+
+.next-icon .next-art {
+  display: none;
+}
+
+.next-icon.has-image {
+  font-size: 13px;
+}
+
+.next-icon.has-image .next-art {
+  display: block;
+}
+
+.next-icon.has-image .next-short {
+  display: block;
 }
 
 .help-card {
@@ -880,6 +969,21 @@ canvas {
   100% {
     opacity: 0;
     transform: translateY(-38px) scale(1);
+  }
+}
+
+@keyframes evolveAssetSpark {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px) scale(0.8);
+  }
+  35% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-38px) scale(1);
   }
 }
 
